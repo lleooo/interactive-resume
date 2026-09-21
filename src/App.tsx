@@ -9,6 +9,7 @@ import { Experience } from './components/Experience';
 import { Projects } from './components/Projects';
 import { Skills } from './components/Skills';
 import { Contact } from './components/Contact';
+import { ParticleBackground } from './components/ParticleBackground';
 import { ChatWidget } from './chatbot/ChatWidget';
 
 const queryClient = new QueryClient();
@@ -18,7 +19,8 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <LanguageProvider>
-          <div className="min-h-screen bg-slate-100 text-slate-900 dark:bg-slate-950 dark:text-white">
+          <ParticleBackground />
+          <div className="relative z-10 min-h-screen text-slate-900 dark:text-white">
             <Header />
             <main className="mx-auto max-w-[794px] px-4 py-8 sm:px-6 sm:py-12">
               <div className="overflow-hidden rounded-2xl bg-white shadow-xl ring-1 ring-slate-900/5 dark:bg-slate-900 dark:ring-white/10">
