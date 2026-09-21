@@ -51,6 +51,7 @@ export const uiStrings = {
   chatbot: {
     title: { en: 'Ask About Me', zh: 'Ask About Me' },
     openLabel: { en: 'Ask About Me', zh: '問我任何問題' },
+    closeLabel: { en: 'Close chat', zh: '關閉聊天室' },
     placeholder: {
       en: 'Ask about my experience, skills, or projects…',
       zh: '詢問我的經歷、技能或專案…',

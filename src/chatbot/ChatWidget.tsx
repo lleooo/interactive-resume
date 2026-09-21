@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useLanguage } from '../i18n/LanguageContext';
 import { uiStrings } from '../i18n/ui-strings';
+import { ChatLauncher } from './ChatLauncher';
 import { ChatMessage } from './ChatMessage';
 import { useSendMessage } from './useSendMessage';
 import type { ChatApiMessage } from './api';
@@ -169,14 +170,7 @@ export function ChatWidget() {
         </div>
       )}
 
-      <button
-        type="button"
-        onClick={() => setIsOpen((prev) => !prev)}
-        className="flex items-center gap-2 rounded-full bg-indigo-600 px-5 py-3 font-medium text-white shadow-lg hover:bg-indigo-700"
-      >
-        <span aria-hidden>💬</span>
-        {t(strings.openLabel)}
-      </button>
+      <ChatLauncher isOpen={isOpen} isThinking={isPending} onToggle={() => setIsOpen((prev) => !prev)} />
     </div>
   );
 }
