@@ -30,3 +30,11 @@ dist-ssr
 
 # Personal documents (contains PII)
 劉楷珉.pdf
+
+# Unused model exports
+public/model/me2.glb
+
+# AI agent / design docs (local only)
+CLAUDE.md
+CONTEXT.md
+docs/

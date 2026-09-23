@@ -2,7 +2,9 @@ import { useEffect, useRef, useState } from 'react';
 import { useLanguage } from '../i18n/LanguageContext';
 import { uiStrings } from '../i18n/ui-strings';
 import { ChatLauncher } from './ChatLauncher';
-import { ChatMessage } from './ChatMessage';
+import { CompanionDock } from './CompanionDock';
+import { useCharacterState } from './useCharacterState';
+import { useMediaQuery } from './model/useMediaQuery';
 import { useSendMessage } from './useSendMessage';
 import type { ChatApiMessage } from './api';
 import type { ChatMessage as ChatMessageType } from './types';
@@ -46,28 +48,43 @@ function makeId() {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 }
 
-export function ChatWidget() {
+interface ChatWidgetProps {
+  /** Hides the idle dock / launcher while true, e.g. on the landing view
+   * where that corner is occupied by the "RESUME" trigger. An already-open
+   * Chat Panel is left alone. */
+  suppressIdle?: boolean;
+}
+
+export function ChatWidget({ suppressIdle = false }: ChatWidgetProps) {
   const { lang, t } = useLanguage();
   const strings = uiStrings.chatbot;
-  const [isOpen, setIsOpen] = useState(false);
+  // Fine-pointer devices get the persistent Companion (ADR-0001); coarse
+  // pointer (touch) devices get the flat launcher icon and only load the 3D
+  // character once tapped.
+  const isDesktop = !useMediaQuery('(pointer: coarse)');
   const [messages, setMessages] = useState<ChatMessageType[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [dailyCount, setDailyCount] = useState(readDailyCount);
   const scrollRef = useRef<HTMLDivElement>(null);
   const { mutateAsync, isPending } = useSendMessage();
+  const { tier, characterState, isChatOpen, openPanel, expand, collapse, requestClose } = useCharacterState(
+    isPending,
+    messages,
+    isDesktop,
+  );
 
   const limitReached = dailyCount >= DAILY_LIMIT;
 
   useEffect(() => {
-    if (isOpen && messages.length === 0) {
+    if (isChatOpen && messages.length === 0) {
       setMessages([{ id: makeId(), sender: 'bot', text: t(strings.greeting) }]);
     }
-  }, [isOpen, messages.length, strings.greeting, t]);
+  }, [isChatOpen, messages.length, strings.greeting, t]);
 
   useEffect(() => {
     const node = scrollRef.current;
     if (node) node.scrollTop = node.scrollHeight;
-  }, [messages, isOpen, isPending]);
+  }, [messages, isChatOpen, isPending]);
 
   async function respondTo(question: string) {
     const trimmed = question.trim();
@@ -99,78 +116,35 @@ export function ChatWidget() {
     respondTo(inputValue);
   }
 
+  if (tier === 'hidden') {
+    if (suppressIdle) return null;
+    return (
+      <div className="fixed bottom-4 right-4 z-50">
+        <ChatLauncher isOpen={false} isThinking={false} onToggle={openPanel} />
+      </div>
+    );
+  }
+
+  if (tier === 'idle' && suppressIdle) return null;
+
   return (
-    <div className="fixed bottom-4 right-4 z-50 flex flex-col items-end gap-3">
-      {isOpen && (
-        <div className="flex h-[28rem] w-[22rem] max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl dark:border-slate-700 dark:bg-slate-800">
-          <div className="flex items-center justify-between bg-indigo-600 px-4 py-3 text-white">
-            <span className="font-semibold">{t(strings.title)}</span>
-            <button
-              type="button"
-              onClick={() => setIsOpen(false)}
-              aria-label="Close chat"
-              className="rounded-full p-1 text-white/80 hover:bg-white/10 hover:text-white"
-            >
-              ✕
-            </button>
-          </div>
-
-          <div ref={scrollRef} className="flex-1 space-y-3 overflow-y-auto p-4">
-            {messages.map((message) => (
-              <ChatMessage key={message.id} message={message} />
-            ))}
-
-            {isPending && (
-              <ChatMessage message={{ id: 'pending', sender: 'bot', text: t(strings.thinking) }} />
-            )}
-
-            {messages.length <= 1 && !isPending && (
-              <div className="pt-2">
-                <p className="mb-2 text-xs font-medium text-slate-500 dark:text-slate-400">
-                  {t(strings.suggestedHeading)}
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {suggestedQuestions.map((q) => (
-                    <button
-                      key={q.en}
-                      type="button"
-                      onClick={() => respondTo(t(q))}
-                      className="rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1 text-xs text-indigo-700 hover:bg-indigo-100 dark:border-indigo-800 dark:bg-indigo-900/40 dark:text-indigo-200"
-                    >
-                      {t(q)}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-
-          <form onSubmit={handleSubmit} className="flex flex-col gap-2 border-t border-slate-200 p-3 dark:border-slate-700">
-            {limitReached && (
-              <p className="text-xs text-slate-500 dark:text-slate-400">{t(strings.dailyLimitReached)}</p>
-            )}
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                placeholder={t(strings.placeholder)}
-                disabled={limitReached}
-                className="min-w-0 flex-1 rounded-full border border-slate-300 bg-transparent px-4 py-2 text-sm outline-none focus:border-indigo-500 disabled:opacity-50 dark:border-slate-600"
-              />
-              <button
-                type="submit"
-                disabled={isPending || limitReached}
-                className="rounded-full bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
-              >
-                {t(strings.send)}
-              </button>
-            </div>
-          </form>
-        </div>
-      )}
-
-      <ChatLauncher isOpen={isOpen} isThinking={isPending} onToggle={() => setIsOpen((prev) => !prev)} />
-    </div>
+    <CompanionDock
+      tier={tier}
+      characterState={characterState}
+      onOpenPanel={openPanel}
+      onExpand={expand}
+      onCollapse={collapse}
+      onClose={requestClose}
+      messages={messages}
+      isPending={isPending}
+      inputValue={inputValue}
+      onInputChange={setInputValue}
+      onSubmit={handleSubmit}
+      limitReached={limitReached}
+      suggestedQuestions={suggestedQuestions}
+      onSuggestedClick={respondTo}
+      showSuggested={messages.length <= 1 && !isPending}
+      scrollRef={scrollRef}
+    />
   );
 }

@@ -1,6 +1,11 @@
 import type { Bilingual } from './types';
 
 export const uiStrings = {
+  landing: {
+    greeting: { en: "Hello, I'm", zh: '嗨，我是' },
+    resumeCta: { en: 'RESUME', zh: '履歷' },
+    back: { en: 'Back', zh: '返回' },
+  },
   nav: {
     about: { en: 'About', zh: '關於我' },
     experience: { en: 'Experience', zh: '工作經歷' },
@@ -52,6 +57,8 @@ export const uiStrings = {
     title: { en: 'Ask About Me', zh: 'Ask About Me' },
     openLabel: { en: 'Ask About Me', zh: '問我任何問題' },
     closeLabel: { en: 'Close chat', zh: '關閉聊天室' },
+    expandLabel: { en: 'Expand to full screen', zh: '展開全螢幕' },
+    collapseLabel: { en: 'Collapse full screen', zh: '收合全螢幕' },
     placeholder: {
       en: 'Ask about my experience, skills, or projects…',
       zh: '詢問我的經歷、技能或專案…',
@@ -61,6 +68,7 @@ export const uiStrings = {
       zh: '嗨！我是 Leo 的履歷小助手，歡迎詢問他的經歷、技能或專案 — 我只會根據履歷中實際的內容回答喔。',
     },
     suggestedHeading: { en: 'Try asking:', zh: '你可以這樣問：' },
+    loadingCharacter: { en: 'Bringing Leo to life…', zh: '正在喚醒 Leo…' },
     send: { en: 'Send', zh: '送出' },
     thinking: { en: 'Thinking…', zh: '思考中…' },
     error: {

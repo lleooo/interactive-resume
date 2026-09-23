@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useLanguage } from '../i18n/LanguageContext';
 import { uiStrings } from '../i18n/ui-strings';
+import { preloadCharacterModel } from './model/preload';
 import { RobotHead } from './RobotHead';
 
 const INTRO_BUBBLE_MS = 5000;
@@ -43,11 +44,15 @@ export function ChatLauncher({
     <button
       type="button"
       onClick={onToggle}
-      onPointerEnter={() => setHovered(true)}
+      onPointerEnter={() => {
+        setHovered(true);
+        preloadCharacterModel();
+      }}
       onPointerLeave={() => setHovered(false)}
-      onFocus={(e) =>
-        setKeyboardFocused(e.currentTarget.matches(':focus-visible'))
-      }
+      onFocus={(e) => {
+        setKeyboardFocused(e.currentTarget.matches(':focus-visible'));
+        preloadCharacterModel();
+      }}
       onBlur={() => setKeyboardFocused(false)}
       aria-label={isOpen ? t(strings.closeLabel) : t(strings.openLabel)}
       aria-expanded={isOpen}
