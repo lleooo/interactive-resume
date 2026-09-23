@@ -4,14 +4,7 @@ export const uiStrings = {
   landing: {
     greeting: { en: "Hello, I'm", zh: '嗨，我是' },
     resumeCta: { en: 'RESUME', zh: '履歷' },
-    back: { en: 'Back', zh: '返回' },
-  },
-  nav: {
-    about: { en: 'About', zh: '關於我' },
-    experience: { en: 'Experience', zh: '工作經歷' },
-    projects: { en: 'Projects', zh: '專案經歷' },
-    skills: { en: 'Skills', zh: '技術能力' },
-    contact: { en: 'Contact', zh: '聯絡方式' },
+    close: { en: 'Close', zh: '關閉' },
   },
   hero: {
     viewExperience: { en: 'View Experience', zh: '查看經歷' },
