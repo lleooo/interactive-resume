@@ -1,7 +1,6 @@
 import { Suspense, useEffect, useRef } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Bounds, Environment, useBounds } from '@react-three/drei';
-import { EffectComposer, Bloom } from '@react-three/postprocessing';
 import * as THREE from 'three';
 import { CharacterModel } from './CharacterModel';
 import type { CharacterState } from './animationConfig';
@@ -169,7 +168,6 @@ function MouseFollowLights({ reducedMotion }: { reducedMotion: boolean }) {
 interface CharacterHostProps {
   state: CharacterState;
   reducedMotion: boolean;
-  isDark: boolean;
   isCoarsePointer: boolean;
   isTabVisible: boolean;
   /** Turns the head toward the cursor; forwarded to CharacterModel. Off by
@@ -197,6 +195,11 @@ function RefitOnChange({
 }) {
   const bounds = useBounds();
   const { camera, size } = useThree();
+  // Viewing direction captured on the first fit and reused afterwards.
+  // Re-deriving it from the camera's current position on every resize made
+  // the angle drift: the camera sits relative to the raised target (not the
+  // box center), and may be mid-animation, so each refit tilted it further.
+  const bustDirection = useRef<THREE.Vector3 | null>(null);
   useEffect(() => {
     bounds.refresh();
     if (framing === 'bust') {
@@ -206,7 +209,8 @@ function RefitOnChange({
         center.y + boxSize.y * BUST_VERTICAL_OFFSET,
         center.z,
       );
-      const direction = camera.position.clone().sub(center).normalize();
+      bustDirection.current ??= camera.position.clone().sub(center).normalize();
+      const direction = bustDirection.current;
       bounds
         .moveTo(target.clone().addScaledVector(direction, distance * BUST_ZOOM))
         .lookAt({ target });
@@ -221,7 +225,6 @@ function RefitOnChange({
 export function CharacterHost({
   state,
   reducedMotion,
-  isDark,
   isCoarsePointer,
   isTabVisible,
   mouseLook,

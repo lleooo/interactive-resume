@@ -1,5 +1,4 @@
 import { Suspense, lazy } from 'react';
-import { useTheme } from '../theme/ThemeContext';
 import { useMediaQuery } from '../chatbot/model/useMediaQuery';
 import { useTabVisible } from '../chatbot/model/useTabVisible';
 
@@ -15,7 +14,6 @@ interface LandingCharacterProps {
 }
 
 export function LandingCharacter({ active }: LandingCharacterProps) {
-  const { theme } = useTheme();
   const reducedMotion = useMediaQuery('(prefers-reduced-motion: reduce)');
   const isCoarsePointer = useMediaQuery('(pointer: coarse)');
   const isTabVisible = useTabVisible();
@@ -31,7 +29,6 @@ export function LandingCharacter({ active }: LandingCharacterProps) {
       <CharacterHost
         state="idle"
         reducedMotion={reducedMotion}
-        isDark={theme === 'dark'}
         isCoarsePointer={isCoarsePointer}
         isTabVisible={isTabVisible && active}
         mouseLook={active && !reducedMotion && !isCoarsePointer}

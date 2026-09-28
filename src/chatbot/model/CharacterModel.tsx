@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useRef } from 'react';
-import { useAnimations, useGLTF } from '@react-three/drei';
+import { useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 import { clone as cloneSkeleton } from 'three/addons/utils/SkeletonUtils.js';
-import { CLIP_NAMES, MODEL_URL, type CharacterState } from './animationConfig';
+import { MODEL_URL, type CharacterState } from './animationConfig';
 import { useMouseLook } from './useMouseLook';
 
 // Turn the character around its vertical axis to face the camera. In radians:
@@ -25,13 +25,11 @@ interface CharacterModelProps {
   mouseLook?: boolean;
 }
 
-export function CharacterModel({
-  state,
-  reducedMotion,
-  mouseLook = false,
-}: CharacterModelProps) {
+// `state` and `reducedMotion` are unused until the clip playback below is
+// re-enabled (the current model only has a rest pose).
+export function CharacterModel({ mouseLook = false }: CharacterModelProps) {
   const group = useRef<THREE.Group>(null);
-  const { scene: cachedScene, animations } = useGLTF(MODEL_URL);
+  const { scene: cachedScene } = useGLTF(MODEL_URL);
 
   // The Companion and the Landing hero can both be mounted at once and both
   // load this same cached GLTF (useGLTF/useLoader caches by URL) — clone the
