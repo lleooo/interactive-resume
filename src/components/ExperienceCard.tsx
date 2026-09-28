@@ -31,12 +31,12 @@ export function ExperienceCard({ entry }: { entry: ExperienceEntry }) {
       )}
 
       <div className="mt-3 flex flex-wrap gap-2">
-        {entry.stack.map((tech) => (
+        {entry.stack.map((tag) => (
           <span
-            key={tech}
+            key={tag.en}
             className="rounded-full bg-indigo-50 px-2.5 py-0.5 text-xs font-medium text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-200"
           >
-            {tech}
+            {t(tag)}
           </span>
         ))}
       </div>

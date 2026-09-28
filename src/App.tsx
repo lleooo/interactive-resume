@@ -4,6 +4,7 @@ import { LanguageProvider } from './i18n/LanguageContext';
 import { ThemeProvider } from './theme/ThemeContext';
 import { Landing } from './components/Landing';
 import { ResumePanel } from './components/ResumePanel';
+import { TopControls } from './components/TopControls';
 import { ParticleBackground } from './components/ParticleBackground';
 import { ChatWidget } from './chatbot/ChatWidget';
 
@@ -28,7 +29,11 @@ function App() {
               open={view === 'resume'}
               onClose={() => setView('landing')}
             />
-            <ChatWidget suppressIdle={view === 'landing'} />
+            <TopControls
+              resumeOpen={view === 'resume'}
+              onClose={() => setView('landing')}
+            />
+            <ChatWidget />
           </div>
         </LanguageProvider>
       </ThemeProvider>

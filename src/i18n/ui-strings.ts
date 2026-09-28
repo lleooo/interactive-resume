@@ -7,12 +7,7 @@ export const uiStrings = {
     close: { en: 'Close', zh: '關閉' },
   },
   hero: {
-    viewExperience: { en: 'View Experience', zh: '查看經歷' },
-    contactMe: { en: 'Contact Me', zh: '聯絡我' },
-  },
-  about: {
-    heading: { en: 'About Me', zh: '關於我' },
-    highlightsHeading: { en: 'Why I Stand Out', zh: '技術亮點' },
+    enlargePhoto: { en: 'Enlarge photo', zh: '放大照片' },
   },
   experience: {
     heading: { en: 'Work Experience', zh: '工作經歷' },
@@ -31,17 +26,7 @@ export const uiStrings = {
     heading: { en: 'Skills', zh: '技術能力' },
   },
   contact: {
-    heading: { en: "Let's Connect", zh: '聯絡方式' },
-    subheading: {
-      en: 'Open to frontend engineering opportunities in Taipei / New Taipei, and remote-friendly roles.',
-      zh: '目前希望在台北 / 新北尋找前端工程師機會，也對遠端工作有意願。',
-    },
-    comingSoon: { en: 'link coming soon', zh: '連結補充中' },
     email: { en: 'Email', zh: 'Email' },
-    github: { en: 'GitHub', zh: 'GitHub' },
-    linkedin: { en: 'LinkedIn', zh: 'LinkedIn' },
-    copyEmail: { en: 'Copy email address', zh: '複製電子郵件' },
-    copied: { en: 'Copied!', zh: '已複製！' },
   },
   footer: {
     rights: { en: 'All rights reserved.', zh: '版權所有。' },
@@ -50,8 +35,6 @@ export const uiStrings = {
     title: { en: 'Ask About Me', zh: 'Ask About Me' },
     openLabel: { en: 'Ask About Me', zh: '問我任何問題' },
     closeLabel: { en: 'Close chat', zh: '關閉聊天室' },
-    expandLabel: { en: 'Expand to full screen', zh: '展開全螢幕' },
-    collapseLabel: { en: 'Collapse full screen', zh: '收合全螢幕' },
     placeholder: {
       en: 'Ask about my experience, skills, or projects…',
       zh: '詢問我的經歷、技能或專案…',
@@ -60,8 +43,6 @@ export const uiStrings = {
       en: "Hi! I'm Leo's resume assistant. Ask me anything about his experience, skills, or projects — I'll only answer from what's actually on his resume.",
       zh: '嗨！我是 Leo 的履歷小助手，歡迎詢問他的經歷、技能或專案 — 我只會根據履歷中實際的內容回答喔。',
     },
-    suggestedHeading: { en: 'Try asking:', zh: '你可以這樣問：' },
-    loadingCharacter: { en: 'Bringing Leo to life…', zh: '正在喚醒 Leo…' },
     send: { en: 'Send', zh: '送出' },
     thinking: { en: 'Thinking…', zh: '思考中…' },
     error: {

@@ -2,10 +2,11 @@ import type { Bilingual } from '../i18n/types';
 
 export interface ContactInfo {
   email: string;
-  /** TODO: resume source has no real URL yet ("請補上連結") — replace with the actual GitHub profile URL. */
-  github: string | null;
-  /** TODO: resume source has no real URL yet ("請補上連結") — replace with the actual LinkedIn profile URL. */
-  linkedin: string | null;
+  phone: {
+    /** E.164 form, used for the `tel:` link. */
+    tel: string;
+    display: Bilingual;
+  };
   location: Bilingual;
 }
 
@@ -17,7 +18,7 @@ export interface ExperienceEntry {
   startDate: string;
   endDate: string | 'present';
   projectName?: Bilingual;
-  stack: string[];
+  stack: Bilingual[];
   bullets: Bilingual[];
 }
 
@@ -107,50 +108,50 @@ export const resumeData: ResumeData = {
   ],
   contact: {
     email: 'leo88728@gmail.com',
-    github: null,
-    linkedin: null,
+    phone: {
+      tel: '+886971615306',
+      display: { en: '+886 971 615 306', zh: '0971-615-306' },
+    },
     location: { en: 'Taipei, Taiwan', zh: '台北市' },
   },
   experience: [
     {
       id: 'justxtor-2026',
-      company: { en: 'JustXtor Technology', zh: '集星資通股份有限公司' },
+      company: { en: 'JustXtar Technology', zh: '集星資通股份有限公司' },
       role: { en: 'Frontend Engineer', zh: '前端工程師' },
       location: { en: 'Neihu, Taipei', zh: '台北市內湖區' },
       startDate: '2026-01',
-      endDate: 'present',
+      endDate: '2026-09',
       projectName: {
         en: 'Community Property Management Admin System',
         zh: '社區物業管理後台系統',
       },
       stack: [
-        'React 18',
-        'TypeScript',
-        'MUI',
-        'TanStack Query',
-        'Zustand',
-        'Vite',
+        { en: 'WebRTC Voice Calling', zh: 'WebRTC 語音通話' },
+        { en: 'Token Refresh Concurrency', zh: 'Token Refresh 併發控制' },
+        { en: 'Network Failure Recovery', zh: '斷線恢復' },
+        { en: 'Containerized Deployment', zh: '容器化部署' },
       ],
       bullets: [
         {
-          en: 'Owned frontend architecture end-to-end as the sole frontend engineer — from initial design through production deployment — shipping 18 business modules, a shared component library, and global state management.',
-          zh: '以唯一前端工程師身份，獨立負責前端系統架構設計與部署，交付 18 個業務模組、共用元件庫與全域狀態管理，完整參與 Production 上線流程。',
+          en: 'Developed and deployed the frontend system across 18 business modules, independently handling feature development, shared components, and state management through to production release.',
+          zh: '負責前端系統開發與部署，涵蓋 18 個業務模組，從功能開發、共用元件與狀態管理至 Production 上線皆獨立完成。',
         },
         {
-          en: 'Designed and built a cloud intercom feature combining WebSocket signaling with WebRTC voice calls — handling ICE candidate buffering, a heartbeat mechanism, and automatic reconnection when tokens expire mid-call.',
-          zh: '設計並實作雲端對講機功能，整合 WebSocket 訊令傳輸與 WebRTC 語音通話，處理 ICE candidate 緩衝、心跳機制與 token 過期自動重連，確保通話穩定性。',
+          en: 'Implemented a cloud intercom with WebSocket signaling + WebRTC voice calls, handling ICE candidate buffering, heartbeats, and auto-reconnect on token expiry.',
+          zh: '實作雲端對講機：WebSocket 訊令 + WebRTC 語音通話，處理 ICE candidate緩衝、心跳、token 過期自動重連。',
         },
         {
-          en: 'Fixed a concurrent-401 auth storm: when several requests hit an expired token at once, each triggered its own refresh. Implemented refresh-concurrency control plus request replay so only one refresh happens and pending requests retry safely.',
-          zh: '解決多請求併發 401 問題：當多個請求同時遇到過期 token 時各自觸發刷新，實作 token refresh 併發控制與請求重放機制，避免重複刷新造成的認證衝突。',
+          en: 'Implemented token refresh concurrency control and request replay to prevent duplicate refreshes when multiple requests hit 401 at once.',
+          zh: '實作 token refresh 併發控制與請求重放，避免多請求同時 401 時重複刷新。',
         },
         {
-          en: 'Designed a disconnect error page and automatic recovery flow to keep the experience graceful during network interruptions.',
-          zh: '設計斷線錯誤頁面與自動恢復流程，改善網路中斷情境下的使用者體驗。',
+          en: 'Handled network interruption scenarios by designing a disconnect error page and recovery flow, improving the user experience under failure conditions.',
+          zh: '處理網路中斷情境，設計斷線錯誤頁面與恢復流程，提升異常狀況下的使用者體驗。',
         },
         {
-          en: 'Used an Nginx reverse proxy to decouple per-environment API configuration, letting Staging and Production share the same Docker image and simplifying deployment.',
-          zh: '使用 Nginx Reverse Proxy 解耦跨環境 API 設定，使 Staging / Production 共用同一 Docker Image，簡化部署流程。',
+          en: 'Decoupled per-environment API configuration with an Nginx reverse proxy, allowing Staging and Production to share the same Docker image.',
+          zh: '使用 Nginx Reverse Proxy 解耦環境 API 設定，使 Staging / Production 共用同一 Docker Image。',
         },
       ],
     },
@@ -161,27 +162,41 @@ export const resumeData: ResumeData = {
       location: { en: 'Neihu, Taipei', zh: '台北市內湖區' },
       startDate: '2024-09',
       endDate: '2025-12',
-      stack: ['Next.js 14', 'React Router', 'SignalR', 'AWS'],
+      projectName: {
+        en: 'Dual-platform Sports Live Streaming Site',
+        zh: '雙平台體育直播站',
+      },
+      stack: [
+        { en: 'Server side Rendering', zh: 'SSR' },
+        { en: 'Anti-blocking Domain Failover', zh: '抗封鎖域名切換' },
+        { en: 'Cross-platform', zh: '跨平台開發' },
+        { en: 'Mobile Compatibility', zh: '行動裝置相容性' },
+        { en: 'PWA', zh: 'PWA' },
+      ],
       bullets: [
         {
-          en: 'Built and maintained a Next.js 14 web platform covering real-time messaging, multi-language i18n, and form submission.',
-          zh: '使用 Next.js 14 開發並維護 Web 平台產品，支援即時通訊、多國語系（i18n）與表單提交等核心功能。',
+          en: 'Developed and maintained the web platform with Next.js 14, building real-time messaging, multi-language support, and form submission features.',
+          zh: '使用 Next.js 14 開發與維護 Web 平台，負責即時通訊、多國語系、表單提交等功能開發。',
         },
         {
-          en: 'Built the mobile-web interface with React Router for a consistent experience across devices.',
-          zh: '使用 React Router 打造行動版介面，提供跨裝置一致的使用者體驗。',
+          en: 'Built the mobile SPA with React Router and Vite, and contributed to PWA feature development and maintenance.',
+          zh: '使用 React Router、Vite 開發手機版 SPA，參與 PWA 功能開發與維護。',
         },
         {
-          en: 'Set up a Route53 → CloudFront → S3 static-site architecture, and configured ALB path routing, target groups, and health checks.',
-          zh: '建置 AWS Route53 → CloudFront → S3 靜態網站架構，並設定 ALB path routing、target group 與健康檢查。',
+          en: 'Diagnosed and fixed cross-device UI compatibility issues, applying CSS adjustments for specific devices and resolving layout shifts caused by iOS Safe Area and the on-screen keyboard.',
+          zh: '排查並修正跨裝置 UI 相容性問題，針對特殊機型進行 CSS 調整，並處理 iOS Safe Area 與鍵盤彈出造成的畫面位移問題。',
         },
         {
-          en: 'Designed a dynamic domain-switching mechanism to reduce the risk of a fixed domain being blocked by the Great Firewall, improving availability.',
-          zh: '設計動態域名切換機制，降低固定域名遭網路長城封鎖之風險，提升服務可用性與存活率。',
+          en: "Contributed to the project's dynamic domain-switching mechanism, preventing fixed domains from being blocked by the Great Firewall and improving site availability and survivability.",
+          zh: '參與專案中的動態域名切換機制，避免固定域名被中國網路長城封鎖，提升網站可用性與存活率。',
         },
         {
-          en: 'Built a real-time gift-sending system with SignalR, synchronizing gift animations live across all connected clients.',
-          zh: '使用 SignalR 開發即時送禮系統，達成禮物動畫跨使用者端即時同步顯示。',
+          en: 'Set up the AWS Route 53, CloudFront, and S3 deployment architecture, covering DNS resolution, CDN, and static frontend asset hosting.',
+          zh: '建置 AWS Route 53、CloudFront、S3 部署架構，完成網域解析、CDN 與前端靜態資源託管。',
+        },
+        {
+          en: 'Built the gift-sending system with SignalR, syncing gift animations in real time across all connected clients.',
+          zh: '使用 SignalR 開發送禮系統，達成禮物動畫在所有使用者端即時同步顯示。',
         },
       ],
     },
@@ -193,13 +208,11 @@ export const resumeData: ResumeData = {
       startDate: '2022-06',
       endDate: '2024-03',
       stack: [
-        'p5.js',
-        'Canvas',
-        'Bootstrap',
-        'jQuery',
-        'Python',
-        'WebSocket',
-        'noVNC',
+        { en: 'Browser-based Remote Access', zh: '瀏覽器遠端操作' },
+        { en: 'Real-time Progress Streaming', zh: '即時進度回傳' },
+        { en: 'Canvas Rendering', zh: 'Canvas 繪圖' },
+        { en: 'Performance Optimization', zh: '效能優化' },
+        { en: 'Full-stack Development', zh: '全端開發' },
       ],
       bullets: [
         {
@@ -356,8 +369,6 @@ export const resumeData: ResumeData = {
         'Bootstrap',
         'PWA',
         'Responsive Web Design',
-        'Canvas',
-        'p5.js',
       ],
     },
     {
@@ -382,11 +393,6 @@ export const resumeData: ResumeData = {
       id: 'tools',
       categoryLabel: { en: 'Tools', zh: '工具' },
       skills: ['Git', 'Vite', 'npm', 'Jira'],
-    },
-    {
-      id: 'currently-deepening',
-      categoryLabel: { en: 'Currently Deepening', zh: '持續精進中' },
-      skills: ['WebRTC', 'Real-time Systems', 'WebSocket', 'SignalR'],
     },
   ],
   education: [
@@ -449,7 +455,7 @@ export const resumeData: ResumeData = {
       zh: '目前的我有接近四年的前端工作經歷，主要使用 React、TypeScript 等技術（Vue 也可以），面對 AI 快速改變軟體開發模式，目前正持續拓展全端相關能力，希望讓自己的技術範圍不只停留在前端，而能參與更完整的產品開發。',
     },
     outsideWork: {
-      en: "I like trying all kinds of new things. Recently, to improve my English, I went abroad for two months to attend a language school. I love taking on different challenges — these experiences have broadened my perspective and given me more diverse viewpoints and ideas, enriching who I am.",
+      en: 'I like trying all kinds of new things. Recently, to improve my English, I went abroad for two months to attend a language school. I love taking on different challenges — these experiences have broadened my perspective and given me more diverse viewpoints and ideas, enriching who I am.',
       zh: '我喜歡嘗試各式各樣的新事物。前陣子為了增進英文能力，我出國念了兩個月的語言學校。我熱愛挑戰不同的事物，通過這些經歷，不僅擴展了我的眼界，也讓我獲得了更多元的觀點和想法，進而充實自己。',
     },
   },
