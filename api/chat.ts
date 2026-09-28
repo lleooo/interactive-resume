@@ -60,7 +60,9 @@ function formatResumeContext(lang: Lang): string {
     );
     if (entry.projectName)
       lines.push(`  Project: ${pick(entry.projectName, lang)}`);
-    lines.push(`  Stack: ${entry.stack.join(', ')}`);
+    lines.push(
+      `  Stack: ${entry.stack.map((tag) => pick(tag, lang)).join(', ')}`,
+    );
     for (const bullet of entry.bullets) {
       lines.push(`  - ${pick(bullet, lang)}`);
     }
