@@ -1,9 +1,14 @@
-import type { RefObject } from 'react';
+import { useEffect, useRef, type RefObject } from 'react';
 import { useLanguage } from '../i18n/LanguageContext';
 import { uiStrings } from '../i18n/ui-strings';
 import { ChatMessage } from './ChatMessage';
 import type { ChatMessage as ChatMessageType } from './types';
 import type { Bilingual } from '../i18n/types';
+
+const freshChipClass =
+  'border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 dark:border-indigo-800 dark:bg-indigo-900/40 dark:text-indigo-200 dark:hover:bg-indigo-900/60';
+const askedChipClass =
+  'border-slate-200 bg-slate-100 text-slate-400 hover:bg-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-500 dark:hover:bg-slate-700';
 
 interface ChatThreadProps {
   messages: ChatMessageType[];
@@ -13,8 +18,9 @@ interface ChatThreadProps {
   onSubmit: (e: React.FormEvent) => void;
   limitReached: boolean;
   suggestedQuestions: Bilingual[];
-  onSuggestedClick: (question: string) => void;
-  showSuggested: boolean;
+  /** `en` keys of suggested questions already asked; shown dimmed. */
+  askedKeys: ReadonlySet<string>;
+  onSuggestedClick: (question: Bilingual) => void;
   scrollRef: RefObject<HTMLDivElement | null>;
 }
 
@@ -26,12 +32,26 @@ export function ChatThread({
   onSubmit,
   limitReached,
   suggestedQuestions,
+  askedKeys,
   onSuggestedClick,
-  showSuggested,
   scrollRef,
 }: ChatThreadProps) {
   const { t } = useLanguage();
   const strings = uiStrings.chatbot;
+  const suggestedRef = useRef<HTMLDivElement>(null);
+
+  // Unasked questions keep their original order; asked ones follow in the
+  // order they were asked (askedKeys is insertion-ordered).
+  const byKey = new Map(suggestedQuestions.map((q) => [q.en, q]));
+  const orderedQuestions = [
+    ...suggestedQuestions.filter((q) => !askedKeys.has(q.en)),
+    ...[...askedKeys].flatMap((key) => byKey.get(key) ?? []),
+  ];
+
+  // After a reorder, jump back to the start so the next unasked question is visible.
+  useEffect(() => {
+    suggestedRef.current?.scrollTo({ left: 0 });
+  }, [askedKeys]);
 
   return (
     <>
@@ -44,26 +64,28 @@ export function ChatThread({
           <ChatMessage message={{ id: 'pending', sender: 'bot', text: t(strings.thinking) }} />
         )}
 
-        {showSuggested && (
-          <div className="pt-2">
-            <p className="mb-2 text-xs font-medium text-slate-500 dark:text-slate-400">
-              {t(strings.suggestedHeading)}
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {suggestedQuestions.map((q) => (
-                <button
-                  key={q.en}
-                  type="button"
-                  onClick={() => onSuggestedClick(t(q))}
-                  className="rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1 text-xs text-indigo-700 hover:bg-indigo-100 dark:border-indigo-800 dark:bg-indigo-900/40 dark:text-indigo-200"
-                >
-                  {t(q)}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
+
+      {!limitReached && (
+        <div
+          ref={suggestedRef}
+          className="flex shrink-0 gap-2 overflow-x-auto border-t border-slate-200 px-3 py-2 dark:border-slate-700"
+        >
+          {orderedQuestions.map((q) => (
+            <button
+              key={q.en}
+              type="button"
+              onClick={() => onSuggestedClick(q)}
+              disabled={isPending}
+              className={`shrink-0 whitespace-nowrap rounded-full border px-3 py-1 text-xs disabled:cursor-not-allowed disabled:opacity-50 ${
+                askedKeys.has(q.en) ? askedChipClass : freshChipClass
+              }`}
+            >
+              {t(q)}
+            </button>
+          ))}
+        </div>
+      )}
 
       <form onSubmit={onSubmit} className="flex flex-col gap-2 border-t border-slate-200 p-3 dark:border-slate-700">
         {limitReached && (

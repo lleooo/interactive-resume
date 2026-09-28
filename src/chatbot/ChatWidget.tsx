@@ -2,12 +2,12 @@ import { useEffect, useRef, useState } from 'react';
 import { useLanguage } from '../i18n/LanguageContext';
 import { uiStrings } from '../i18n/ui-strings';
 import { ChatLauncher } from './ChatLauncher';
-import { CompanionDock } from './CompanionDock';
-import { useCharacterState } from './useCharacterState';
-import { useMediaQuery } from './model/useMediaQuery';
+import { ChatThread } from './ChatThread';
+import { RobotHead } from './RobotHead';
 import { useSendMessage } from './useSendMessage';
 import type { ChatApiMessage } from './api';
 import type { ChatMessage as ChatMessageType } from './types';
+import type { Bilingual } from '../i18n/types';
 
 const suggestedQuestions = [
   { en: 'Who are you?', zh: '你是誰？' },
@@ -48,43 +48,29 @@ function makeId() {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 }
 
-interface ChatWidgetProps {
-  /** Hides the idle dock / launcher while true, e.g. on the landing view
-   * where that corner is occupied by the "RESUME" trigger. An already-open
-   * Chat Panel is left alone. */
-  suppressIdle?: boolean;
-}
-
-export function ChatWidget({ suppressIdle = false }: ChatWidgetProps) {
+export function ChatWidget() {
   const { lang, t } = useLanguage();
   const strings = uiStrings.chatbot;
-  // Fine-pointer devices get the persistent Companion (ADR-0001); coarse
-  // pointer (touch) devices get the flat launcher icon and only load the 3D
-  // character once tapped.
-  const isDesktop = !useMediaQuery('(pointer: coarse)');
+  const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<ChatMessageType[]>([]);
   const [inputValue, setInputValue] = useState('');
+  const [askedKeys, setAskedKeys] = useState<ReadonlySet<string>>(() => new Set());
   const [dailyCount, setDailyCount] = useState(readDailyCount);
   const scrollRef = useRef<HTMLDivElement>(null);
   const { mutateAsync, isPending } = useSendMessage();
-  const { tier, characterState, isChatOpen, openPanel, expand, collapse, requestClose } = useCharacterState(
-    isPending,
-    messages,
-    isDesktop,
-  );
 
   const limitReached = dailyCount >= DAILY_LIMIT;
 
   useEffect(() => {
-    if (isChatOpen && messages.length === 0) {
+    if (isOpen && messages.length === 0) {
       setMessages([{ id: makeId(), sender: 'bot', text: t(strings.greeting) }]);
     }
-  }, [isChatOpen, messages.length, strings.greeting, t]);
+  }, [isOpen, messages.length, strings.greeting, t]);
 
   useEffect(() => {
     const node = scrollRef.current;
     if (node) node.scrollTop = node.scrollHeight;
-  }, [messages, isChatOpen, isPending]);
+  }, [messages, isOpen, isPending]);
 
   async function respondTo(question: string) {
     const trimmed = question.trim();
@@ -116,35 +102,52 @@ export function ChatWidget({ suppressIdle = false }: ChatWidgetProps) {
     respondTo(inputValue);
   }
 
-  if (tier === 'hidden') {
-    if (suppressIdle) return null;
-    return (
-      <div className="fixed bottom-4 right-4 z-50">
-        <ChatLauncher isOpen={false} isThinking={false} onToggle={openPanel} />
-      </div>
-    );
+  function handleSuggestedClick(question: Bilingual) {
+    if (isPending || limitReached) return;
+    // Re-insert so the Set's order is "most recently asked last".
+    setAskedKeys((prev) => {
+      const next = new Set(prev);
+      next.delete(question.en);
+      return next.add(question.en);
+    });
+    respondTo(t(question));
   }
 
-  if (tier === 'idle' && suppressIdle) return null;
-
   return (
-    <CompanionDock
-      tier={tier}
-      characterState={characterState}
-      onOpenPanel={openPanel}
-      onExpand={expand}
-      onCollapse={collapse}
-      onClose={requestClose}
-      messages={messages}
-      isPending={isPending}
-      inputValue={inputValue}
-      onInputChange={setInputValue}
-      onSubmit={handleSubmit}
-      limitReached={limitReached}
-      suggestedQuestions={suggestedQuestions}
-      onSuggestedClick={respondTo}
-      showSuggested={messages.length <= 1 && !isPending}
-      scrollRef={scrollRef}
-    />
+    <div className="fixed bottom-4 right-4 z-50 flex flex-col items-end gap-3">
+      {isOpen && (
+        <div className="flex h-[28rem] w-[22rem] max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl dark:border-slate-700 dark:bg-slate-800">
+          <div className="flex items-center justify-between border-b border-slate-200 px-4 py-2 dark:border-slate-700">
+            <div className="flex items-center gap-2">
+              <RobotHead mood={isPending ? 'thinking' : 'idle'} blinkSignal={0} className="h-8 w-8" />
+              <span className="font-semibold text-slate-800 dark:text-white">{t(strings.title)}</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setIsOpen(false)}
+              aria-label={t(strings.closeLabel)}
+              className="rounded-full p-2 text-slate-500 hover:bg-slate-900/5 hover:text-slate-800 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white"
+            >
+              ✕
+            </button>
+          </div>
+
+          <ChatThread
+            messages={messages}
+            isPending={isPending}
+            inputValue={inputValue}
+            onInputChange={setInputValue}
+            onSubmit={handleSubmit}
+            limitReached={limitReached}
+            suggestedQuestions={suggestedQuestions}
+            askedKeys={askedKeys}
+            onSuggestedClick={handleSuggestedClick}
+            scrollRef={scrollRef}
+          />
+        </div>
+      )}
+
+      <ChatLauncher isOpen={isOpen} isThinking={isPending} onToggle={() => setIsOpen((prev) => !prev)} />
+    </div>
   );
 }
