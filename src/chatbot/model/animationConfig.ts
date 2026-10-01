@@ -5,7 +5,7 @@ export type CharacterState =
   | 'greeting'
   | 'farewell';
 
-export const MODEL_URL = '/model/me.glb';
+export const MODEL_URL = '/model/me-nonormal.glb';
 
 // The current model only ships a static rest pose (no talk/wave/idle-loop
 // clips) — every chat state holds it for now. Swap individual entries here

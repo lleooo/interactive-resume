@@ -20,8 +20,6 @@ const NORMAL_SCALE = 0;
 interface CharacterModelProps {
   state: CharacterState;
   reducedMotion: boolean;
-  /** Turns the head bone toward the cursor, added on top of the baked pose.
-   * Off by default. */
   mouseLook?: boolean;
 }
 
@@ -31,17 +29,9 @@ export function CharacterModel({ mouseLook = false }: CharacterModelProps) {
   const group = useRef<THREE.Group>(null);
   const { scene: cachedScene } = useGLTF(MODEL_URL);
 
-  // The Companion and the Landing hero can both be mounted at once and both
-  // load this same cached GLTF (useGLTF/useLoader caches by URL) — clone the
-  // scene per instance so each has its own independent object graph instead
-  // of two <primitive> elements fighting over (and re-parenting) one shared
-  // object. SkeletonUtils.clone (unlike a plain Object3D clone) preserves
-  // skinned-mesh bone bindings correctly.
   const scene = useMemo(() => {
     const cloned = cloneSkeleton(cachedScene) as THREE.Object3D;
-    // clone() shares materials by reference (it doesn't deep-clone them), so
-    // this mutates the same material every instance uses — that's fine, it's
-    // the same fix applied everywhere, and idempotent if it runs more than once.
+
     cloned.traverse((node) => {
       const mesh = node as THREE.Mesh;
       if (!mesh.isMesh) return;
@@ -57,29 +47,12 @@ export function CharacterModel({ mouseLook = false }: CharacterModelProps) {
     return cloned;
   }, [cachedScene]);
 
-  // const { actions } = useAnimations(animations, group);
-
   const headRef = useRef<THREE.Object3D | null>(null);
   useEffect(() => {
     headRef.current = scene.getObjectByName(HEAD_BONE_NAME) ?? null;
   }, [scene]);
 
   useMouseLook({ enabled: mouseLook, node: headRef });
-
-  // useEffect(() => {
-  //   const action = actions[CLIP_NAMES[state]];
-  //   if (!action) return;
-
-  //   action
-  //     .reset()
-  //     .fadeIn(reducedMotion ? 0 : 0.3)
-  //     .play();
-  //   action.paused = reducedMotion;
-
-  //   return () => {
-  //     action.fadeOut(reducedMotion ? 0 : 0.2);
-  //   };
-  // }, [state, actions, reducedMotion]);
 
   return (
     <primitive

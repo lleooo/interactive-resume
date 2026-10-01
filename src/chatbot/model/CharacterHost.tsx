@@ -122,9 +122,7 @@ function MouseFollowLights({ reducedMotion }: { reducedMotion: boolean }) {
           );
           edgeAngles.current[i] = angle + delta * MOUSE_LIGHT_EASE;
         }
-        light.position.set(
-          ...edgeLightPosition(config, edgeAngles.current[i]),
-        );
+        light.position.set(...edgeLightPosition(config, edgeAngles.current[i]));
         return;
       }
       const [baseX, baseY] = config.position;
@@ -244,9 +242,6 @@ export function CharacterHost({
       )}
       <MouseFollowLights reducedMotion={reducedMotion} />
       <Suspense fallback={null}>
-        {/* The character's PBR material (metallic/roughness + normal map)
-         * needs reflections to read correctly — without an environment map,
-         * directional-only lighting makes the normal map look noisy/bumpy. */}
         <Environment preset="forest" />
         <Bounds clip observe margin={1.2}>
           <RefitOnChange fitKey={fitKey} framing={framing} />
@@ -257,14 +252,6 @@ export function CharacterHost({
           />
         </Bounds>
       </Suspense>
-      {/* <EffectComposer>
-        <Bloom
-          luminanceThreshold={0.6}
-          luminanceSmoothing={0.3}
-          intensity={0.8}
-          mipmapBlur
-        />
-      </EffectComposer> */}
     </Canvas>
   );
 }
