@@ -5,8 +5,146 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Leo Liu | Frontend Engineer</title>
+    <style>
+      /* Boot loader: covers the page from first paint until the 3D character
+         is ready (see src/shared/bootLoader.ts). Colors match Landing's
+         bg-slate-50 / dark:bg-black. */
+      #boot-loader {
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1.25rem;
+        background: #f8fafc;
+        color: #0f172a;
+        font-family: system-ui, 'Segoe UI', Roboto, 'Noto Sans TC', sans-serif;
+        transition: opacity 400ms ease;
+      }
+      html.dark #boot-loader {
+        background: #000;
+        color: #fff;
+      }
+      /* Contents only fade in after 300ms, so a fast (cached) load shows
+         just the background instead of a flashing bar. */
+      #boot-loader > * {
+        opacity: 0;
+        animation: boot-in 400ms ease 300ms forwards;
+      }
+      @keyframes boot-in {
+        to {
+          opacity: 1;
+        }
+      }
+      .boot-name {
+        margin: 0;
+        font-size: 0.875rem;
+        font-weight: 600;
+        letter-spacing: 0.4em;
+        padding-left: 0.4em;
+      }
+      .boot-track {
+        width: 10rem;
+        height: 2px;
+        border-radius: 9999px;
+        background: color-mix(in srgb, currentColor 15%, transparent);
+        overflow: hidden;
+      }
+      .boot-fill {
+        width: calc(var(--p, 0) * 100%);
+        height: 100%;
+        background: currentColor;
+        transition: width 300ms ease;
+      }
+      .boot-percent {
+        margin: 0;
+        font-size: 0.75rem;
+        letter-spacing: 0.2em;
+        opacity: 0.6;
+        font-variant-numeric: tabular-nums;
+      }
+      #boot-loader.boot-loader--done {
+        opacity: 0;
+        pointer-events: none;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        #boot-loader,
+        .boot-fill {
+          transition: none;
+        }
+      }
+    </style>
+    <script>
+      (function () {
+        // Apply the saved theme before first paint (ThemeContext only does
+        // it after React mounts), so dark-mode visitors never see light.
+        try {
+          if (localStorage.getItem('resume-theme') === 'dark') {
+            document.documentElement.classList.add('dark');
+          }
+        } catch (e) {
+          // localStorage unavailable — stay on the light default
+        }
+
+        var progress = 0;
+        var done = false;
+        var creep;
+
+        function el() {
+          return document.getElementById('boot-loader');
+        }
+
+        // Only ever moves forward. 0–0.2 covers downloading the JS, which
+        // has no real progress; the 3D asset download fills 0.2–1.
+        function setProgress(p) {
+          var loader = el();
+          if (!loader || done || p <= progress) return;
+          progress = Math.min(p, 1);
+          var pct = Math.round(progress * 100);
+          loader.style.setProperty('--p', String(progress));
+          loader.setAttribute('aria-valuenow', String(pct));
+          var label = loader.querySelector('.boot-percent');
+          if (label) label.textContent = pct + '%';
+        }
+
+        function finish() {
+          var loader = el();
+          if (!loader || done) return;
+          setProgress(1);
+          done = true;
+          clearInterval(creep);
+          loader.classList.add('boot-loader--done');
+          setTimeout(function () {
+            loader.remove();
+          }, 450);
+        }
+
+        window.__bootLoader = { setProgress: setProgress, finish: finish };
+
+        // Ease toward 20% while the JS bundles download.
+        creep = setInterval(function () {
+          setProgress(progress + (0.2 - progress) * 0.08);
+        }, 200);
+        // Never block the page on the 3D character: give up after 15s.
+        setTimeout(finish, 15000);
+      })();
+    </script>
   </head>
   <body>
+    <div
+      id="boot-loader"
+      role="progressbar"
+      aria-label="Loading"
+      aria-valuemin="0"
+      aria-valuemax="100"
+      aria-valuenow="0"
+    >
+      <p class="boot-name">LEO LIU</p>
+      <div class="boot-track"><div class="boot-fill"></div></div>
+      <p class="boot-percent">0%</p>
+    </div>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

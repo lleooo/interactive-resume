@@ -1,6 +1,10 @@
 import { Suspense, lazy } from 'react';
 import { useMediaQuery } from '../../../shared/hooks/useMediaQuery';
 import { useTabVisible } from '../../../shared/hooks/useTabVisible';
+import {
+  finishBootLoader,
+  setBootAssetProgress,
+} from '../../../shared/bootLoader';
 
 const CharacterHost = lazy(() =>
   import('./CharacterHost').then((m) => ({
@@ -40,6 +44,8 @@ export function LandingCharacter({ active }: LandingCharacterProps) {
         fitMargin={isMobile ? 1.05 : undefined}
         fitKey={`landing-${isMobile ? 'full' : 'bust'}`}
         transparentBackground
+        onLoadProgress={setBootAssetProgress}
+        onReady={finishBootLoader}
       />
     </Suspense>
   );

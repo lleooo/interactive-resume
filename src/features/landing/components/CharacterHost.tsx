@@ -5,6 +5,7 @@ import {
   Environment,
   OrbitControls,
   useBounds,
+  useProgress,
 } from '@react-three/drei';
 import * as THREE from 'three';
 import { CharacterModel } from './CharacterModel';
@@ -354,6 +355,11 @@ interface CharacterHostProps {
   fitKey: string;
   /** Padding around the model when fitting the camera (1 = edge to edge). */
   fitMargin?: number;
+  /** 3D asset download progress (0–1), from drei's loading manager. */
+  onLoadProgress?: (progress: number) => void;
+  /** Called once, after every asset has loaded and the first frame with the
+   * character in it has rendered. */
+  onReady?: () => void;
   /** When true, the canvas clears to transparent instead of opaque black,
    * so a CSS glow layer behind it can show through and bleed into the
    * background around the character. */
@@ -417,6 +423,18 @@ function RefitOnChange({
   return null;
 }
 
+// Lives inside the Suspense boundary, so its first frame is the first one
+// with the model and environment map in it.
+function ReadySignal({ onReady }: { onReady?: () => void }) {
+  const fired = useRef(false);
+  useFrame(() => {
+    if (fired.current) return;
+    fired.current = true;
+    onReady?.();
+  });
+  return null;
+}
+
 export function CharacterHost({
   state,
   reducedMotion,
@@ -427,7 +445,14 @@ export function CharacterHost({
   fitKey,
   fitMargin = 1.2,
   transparentBackground = false,
+  onLoadProgress,
+  onReady,
 }: CharacterHostProps) {
+  const { progress, total } = useProgress();
+  useEffect(() => {
+    if (total > 0) onLoadProgress?.(progress / 100);
+  }, [progress, total, onLoadProgress]);
+
   return (
     <Canvas
       dpr={isCoarsePointer ? [1, 1.5] : [1, 2]}
@@ -442,7 +467,9 @@ export function CharacterHost({
       <ZoomControls reducedMotion={reducedMotion} />
       <DragOrbit reducedMotion={reducedMotion} />
       <Suspense fallback={null}>
-        <Environment preset="forest" />
+        {/* Self-hosted copy of drei's 'forest' preset, instead of fetching it
+            from drei's CDN at runtime. */}
+        <Environment files="/env/forest_slope_1k.hdr" />
         <Bounds clip observe margin={fitMargin}>
           <RefitOnChange
             fitKey={fitKey}
@@ -455,6 +482,7 @@ export function CharacterHost({
             mouseLook={mouseLook}
           />
         </Bounds>
+        <ReadySignal onReady={onReady} />
       </Suspense>
     </Canvas>
   );
