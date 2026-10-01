@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { Lang } from '../i18n/types';
+import type { Lang } from '../../shared/i18n/types';
 
 export interface ChatApiMessage {
   role: 'user' | 'assistant';

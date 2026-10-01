@@ -1,8 +1,8 @@
-import { useMediaQuery } from '../chatbot/model/useMediaQuery';
+import { useMediaQuery } from '../hooks/useMediaQuery';
 import { useLanguage } from '../i18n/LanguageContext';
 import { uiStrings } from '../i18n/ui-strings';
 import { useTheme } from '../theme/ThemeContext';
-import { EASE } from './ResumePanel';
+import { EASE } from '../motion';
 
 interface TopControlsProps {
   /** Shows the close button when the resume panel is open. */

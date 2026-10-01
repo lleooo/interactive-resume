@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { useLanguage } from '../i18n/LanguageContext';
-import { uiStrings } from '../i18n/ui-strings';
-import { resumeData } from '../data/resume-data';
+import { useLanguage } from '../../../shared/i18n/LanguageContext';
+import { uiStrings } from '../../../shared/i18n/ui-strings';
+import { resumeData } from '../../../shared/data/resume-data';
 import { ProjectCard } from './ProjectCard';
 
 const allTags = Array.from(new Set(resumeData.projects.flatMap((project) => project.tech))).sort();

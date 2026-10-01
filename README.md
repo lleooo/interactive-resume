@@ -37,12 +37,16 @@ public/
   headshot/            # 大頭照
 src/
   App.tsx              # 在 landing / resume 兩個畫面之間切換
-  components/          # 首頁、履歷面板、各履歷區塊、頂部控制列
-  chatbot/             # 聊天室 UI、API 呼叫
-    model/             # 3D 角色（CharacterHost、CharacterModel、滑鼠追蹤）
-  data/resume-data.ts  # 履歷內容（唯一資料來源，前端與聊天 API 共用）
-  i18n/                # 語系 Context 與介面文字
-  theme/               # 主題 Context
+  features/            # 各功能自成一個資料夾，彼此不互相 import
+    landing/           # 首頁與 3D 角色（CharacterHost、CharacterModel、滑鼠追蹤）
+    resume/            # 履歷面板與各履歷區塊
+    chatbot/           # 聊天室 UI、API 呼叫
+  shared/              # 跨功能共用
+    components/        # 頂部控制列、粒子背景
+    hooks/             # useMediaQuery、useTabVisible
+    data/resume-data.ts  # 履歷內容（唯一資料來源，前端與聊天 API 共用）
+    i18n/              # 語系 Context 與介面文字
+    theme/             # 主題 Context
 ```
 
 ## 本機開發
@@ -77,7 +81,7 @@ npm run lint       # 執行 Oxlint
 
 ## 修改履歷內容
 
-所有履歷資料都在 [`src/data/resume-data.ts`](src/data/resume-data.ts)，修改後網頁與 AI 助手會同步使用新內容，不需要另外改其他地方。介面上的固定文字（按鈕、標題等）則在 [`src/i18n/ui-strings.ts`](src/i18n/ui-strings.ts)。
+所有履歷資料都在 [`src/shared/data/resume-data.ts`](src/shared/data/resume-data.ts)，修改後網頁與 AI 助手會同步使用新內容，不需要另外改其他地方。介面上的固定文字（按鈕、標題等）則在 [`src/shared/i18n/ui-strings.ts`](src/shared/i18n/ui-strings.ts)。
 
 ## 部署
 

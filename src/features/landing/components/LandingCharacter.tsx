@@ -1,9 +1,9 @@
 import { Suspense, lazy } from 'react';
-import { useMediaQuery } from '../chatbot/model/useMediaQuery';
-import { useTabVisible } from '../chatbot/model/useTabVisible';
+import { useMediaQuery } from '../../../shared/hooks/useMediaQuery';
+import { useTabVisible } from '../../../shared/hooks/useTabVisible';
 
 const CharacterHost = lazy(() =>
-  import('../chatbot/model/CharacterHost').then((m) => ({
+  import('./CharacterHost').then((m) => ({
     default: m.CharacterHost,
   })),
 );

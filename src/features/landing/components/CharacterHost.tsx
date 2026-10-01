@@ -3,7 +3,7 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Bounds, Environment, useBounds } from '@react-three/drei';
 import * as THREE from 'three';
 import { CharacterModel } from './CharacterModel';
-import type { CharacterState } from './animationConfig';
+import type { CharacterState } from '../animationConfig';
 
 type Framing = 'full' | 'bust';
 

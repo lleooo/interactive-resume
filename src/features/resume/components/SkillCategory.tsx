@@ -1,5 +1,5 @@
-import { useLanguage } from '../i18n/LanguageContext';
-import type { SkillCategory as SkillCategoryType } from '../data/resume-data';
+import { useLanguage } from '../../../shared/i18n/LanguageContext';
+import type { SkillCategory as SkillCategoryType } from '../../../shared/data/resume-data';
 
 export function SkillCategory({ category }: { category: SkillCategoryType }) {
   const { t } = useLanguage();

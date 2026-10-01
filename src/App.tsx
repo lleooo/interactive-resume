@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { LanguageProvider } from './i18n/LanguageContext';
-import { ThemeProvider } from './theme/ThemeContext';
-import { Landing } from './components/Landing';
-import { ResumePanel } from './components/ResumePanel';
-import { TopControls } from './components/TopControls';
-import { ParticleBackground } from './components/ParticleBackground';
-import { ChatWidget } from './chatbot/ChatWidget';
+import { LanguageProvider } from './shared/i18n/LanguageContext';
+import { ThemeProvider } from './shared/theme/ThemeContext';
+import { Landing } from './features/landing/Landing';
+import { ResumePanel } from './features/resume/ResumePanel';
+import { TopControls } from './shared/components/TopControls';
+import { ParticleBackground } from './shared/components/ParticleBackground';
+import { ChatWidget } from './features/chatbot/ChatWidget';
 
 const queryClient = new QueryClient();
 

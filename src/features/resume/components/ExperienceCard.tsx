@@ -1,6 +1,6 @@
-import { useLanguage } from '../i18n/LanguageContext';
-import { uiStrings } from '../i18n/ui-strings';
-import type { ExperienceEntry } from '../data/resume-data';
+import { useLanguage } from '../../../shared/i18n/LanguageContext';
+import { uiStrings } from '../../../shared/i18n/ui-strings';
+import type { ExperienceEntry } from '../../../shared/data/resume-data';
 
 function formatDate(iso: string) {
   const [year, month] = iso.split('-');

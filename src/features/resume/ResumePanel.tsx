@@ -1,17 +1,16 @@
 import { useEffect, useRef, type MouseEvent } from 'react';
-import { useMediaQuery } from '../chatbot/model/useMediaQuery';
-import { Footer } from './layout/Footer';
-import { Hero } from './Hero';
-import { Experience } from './Experience';
-import { Projects } from './Projects';
-import { Skills } from './Skills';
+import { useMediaQuery } from '../../shared/hooks/useMediaQuery';
+import { EASE } from '../../shared/motion';
+import { Footer } from './components/Footer';
+import { Hero } from './components/Hero';
+import { Experience } from './components/Experience';
+import { Projects } from './components/Projects';
+import { Skills } from './components/Skills';
 
 interface ResumePanelProps {
   open: boolean;
   onClose: () => void;
 }
-
-export const EASE = 'duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]';
 
 export function ResumePanel({ open, onClose }: ResumePanelProps) {
   const reducedMotion = useMediaQuery('(prefers-reduced-motion: reduce)');

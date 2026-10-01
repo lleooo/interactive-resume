@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { useLanguage } from '../i18n/LanguageContext';
-import { uiStrings } from '../i18n/ui-strings';
+import { useLanguage } from '../../../shared/i18n/LanguageContext';
+import { uiStrings } from '../../../shared/i18n/ui-strings';
 import { RobotHead } from './RobotHead';
 
 const INTRO_BUBBLE_MS = 5000;

@@ -1,4 +1,4 @@
-import type { ChatMessage as ChatMessageType } from './types';
+import type { ChatMessage as ChatMessageType } from '../types';
 
 export function ChatMessage({ message }: { message: ChatMessageType }) {
   const isBot = message.sender === 'bot';

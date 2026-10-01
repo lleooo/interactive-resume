@@ -2,8 +2,8 @@ import { useEffect, useMemo, useRef } from 'react';
 import { useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 import { clone as cloneSkeleton } from 'three/addons/utils/SkeletonUtils.js';
-import { MODEL_URL, type CharacterState } from './animationConfig';
-import { useMouseLook } from './useMouseLook';
+import { MODEL_URL, type CharacterState } from '../animationConfig';
+import { useMouseLook } from '../hooks/useMouseLook';
 
 // Turn the character around its vertical axis to face the camera. In radians:
 // 0 = as exported, Math.PI / 2 = quarter turn, Math.PI = fully around.

@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
-import { useLanguage } from '../i18n/LanguageContext';
-import { uiStrings } from '../i18n/ui-strings';
-import { ChatLauncher } from './ChatLauncher';
-import { ChatThread } from './ChatThread';
-import { RobotHead } from './RobotHead';
-import { useSendMessage } from './useSendMessage';
+import { useLanguage } from '../../shared/i18n/LanguageContext';
+import { uiStrings } from '../../shared/i18n/ui-strings';
+import { ChatLauncher } from './components/ChatLauncher';
+import { ChatThread } from './components/ChatThread';
+import { RobotHead } from './components/RobotHead';
+import { useSendMessage } from './hooks/useSendMessage';
 import type { ChatApiMessage } from './api';
 import type { ChatMessage as ChatMessageType } from './types';
-import type { Bilingual } from '../i18n/types';
+import type { Bilingual } from '../../shared/i18n/types';
 
 const suggestedQuestions = [
   { en: 'Who are you?', zh: '你是誰？' },

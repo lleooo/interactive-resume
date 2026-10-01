@@ -1,6 +1,6 @@
-import { useLanguage } from '../i18n/LanguageContext';
-import { uiStrings } from '../i18n/ui-strings';
-import type { ProjectEntry } from '../data/resume-data';
+import { useLanguage } from '../../../shared/i18n/LanguageContext';
+import { uiStrings } from '../../../shared/i18n/ui-strings';
+import type { ProjectEntry } from '../../../shared/data/resume-data';
 
 interface ProjectCardProps {
   project: ProjectEntry;

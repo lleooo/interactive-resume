@@ -1,9 +1,9 @@
 import { useEffect, useRef, type RefObject } from 'react';
-import { useLanguage } from '../i18n/LanguageContext';
-import { uiStrings } from '../i18n/ui-strings';
+import { useLanguage } from '../../../shared/i18n/LanguageContext';
+import { uiStrings } from '../../../shared/i18n/ui-strings';
 import { ChatMessage } from './ChatMessage';
-import type { ChatMessage as ChatMessageType } from './types';
-import type { Bilingual } from '../i18n/types';
+import type { ChatMessage as ChatMessageType } from '../types';
+import type { Bilingual } from '../../../shared/i18n/types';
 
 const freshChipClass =
   'border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 dark:border-indigo-800 dark:bg-indigo-900/40 dark:text-indigo-200 dark:hover:bg-indigo-900/60';

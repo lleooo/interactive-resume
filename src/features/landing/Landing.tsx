@@ -1,6 +1,6 @@
-import { LandingCharacter } from './LandingCharacter';
-import { GlowBackground } from './GlowBackground';
-import { LandingOverlay } from './LandingOverlay';
+import { LandingCharacter } from './components/LandingCharacter';
+import { GlowBackground } from './components/GlowBackground';
+import { LandingOverlay } from './components/LandingOverlay';
 
 interface LandingProps {
   active: boolean;

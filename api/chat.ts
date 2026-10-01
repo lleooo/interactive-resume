@@ -1,5 +1,5 @@
-import { resumeData } from '../src/data/resume-data';
-import type { Bilingual, Lang } from '../src/i18n/types';
+import { resumeData } from '../src/shared/data/resume-data';
+import type { Bilingual, Lang } from '../src/shared/i18n/types';
 
 export const config = { runtime: 'edge' };
 
