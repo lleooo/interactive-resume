@@ -5,7 +5,9 @@ export type CharacterState =
   | 'greeting'
   | 'farewell';
 
-export const MODEL_URL = '/model/me-nonormal.glb';
+// Served with an immutable cache header (see vercel.json) — bump the
+// filename (me-v3.glb, ...) whenever the model changes.
+export const MODEL_URL = '/model/me-v2.glb';
 
 // The current model only ships a static rest pose (no talk/wave/idle-loop
 // clips) — every chat state holds it for now. Swap individual entries here
