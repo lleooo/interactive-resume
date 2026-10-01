@@ -16,6 +16,9 @@ interface LandingCharacterProps {
 export function LandingCharacter({ active }: LandingCharacterProps) {
   const reducedMotion = useMediaQuery('(prefers-reduced-motion: reduce)');
   const isCoarsePointer = useMediaQuery('(pointer: coarse)');
+  // Below Tailwind's md breakpoint (same one LandingOverlay switches at) the
+  // screen is tall and narrow, so show the whole body instead of the bust.
+  const isMobile = useMediaQuery('(max-width: 767px)');
   const isTabVisible = useTabVisible();
 
   return (
@@ -32,8 +35,10 @@ export function LandingCharacter({ active }: LandingCharacterProps) {
         isCoarsePointer={isCoarsePointer}
         isTabVisible={isTabVisible && active}
         mouseLook={active && !reducedMotion && !isCoarsePointer}
-        framing="bust"
-        fitKey="landing"
+        framing={isMobile ? 'full' : 'bust'}
+        // Tighter fit on mobile so the full body nearly fills the height.
+        fitMargin={isMobile ? 1.05 : undefined}
+        fitKey={`landing-${isMobile ? 'full' : 'bust'}`}
         transparentBackground
       />
     </Suspense>

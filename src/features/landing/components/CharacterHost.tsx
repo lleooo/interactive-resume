@@ -1,6 +1,11 @@
-import { Suspense, useEffect, useRef } from 'react';
+import { Suspense, useEffect, useRef, type ComponentRef } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { Bounds, Environment, useBounds } from '@react-three/drei';
+import {
+  Bounds,
+  Environment,
+  OrbitControls,
+  useBounds,
+} from '@react-three/drei';
 import * as THREE from 'three';
 import { CharacterModel } from './CharacterModel';
 import type { CharacterState } from '../animationConfig';
@@ -12,6 +17,20 @@ type Framing = 'full' | 'bust';
 // full-body height) the look-at target is raised to land around chest/head.
 const BUST_ZOOM = 0.45; //0.45
 const BUST_VERTICAL_OFFSET = 0.2;
+
+// Wheel / pinch zoom, applied as camera.zoom so it stacks on top of whatever
+// distance Bounds fitted to and survives refits. Range is relative to that
+// fit (1 = as fitted); speed is zoom factor per unit of wheel deltaY.
+const ZOOM_MIN = 0.7;
+const ZOOM_MAX = 2.5;
+const WHEEL_ZOOM_SPEED = 0.001;
+const ZOOM_EASE = 0.1;
+
+// Drag-to-orbit: how far (radians) the camera may swing from its fitted
+// angle horizontally / vertically, and how fast it eases back on release.
+const ORBIT_MAX_AZIMUTH = Math.PI / 3;
+const ORBIT_MAX_POLAR = Math.PI / 12;
+const ORBIT_RETURN_EASE = 0.08;
 
 // Two accent lights: a green backlight centered behind the character (base
 // position echoes the CSS glow blob in GlowBackground.tsx — centered
@@ -163,6 +182,161 @@ function MouseFollowLights({ reducedMotion }: { reducedMotion: boolean }) {
   );
 }
 
+// Zooms the camera with the mouse wheel, or a two-finger pinch on touch
+// screens. Listens on the canvas itself so scrolling other layers (e.g. the
+// resume panel) never zooms the character.
+function ZoomControls({ reducedMotion }: { reducedMotion: boolean }) {
+  const { gl, camera } = useThree();
+  const targetZoom = useRef(1);
+
+  useEffect(() => {
+    const el = gl.domElement;
+    const zoomBy = (factor: number) => {
+      targetZoom.current = THREE.MathUtils.clamp(
+        targetZoom.current * factor,
+        ZOOM_MIN,
+        ZOOM_MAX,
+      );
+    };
+
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      // Exponential so trackpads (many small deltas) and wheels (few large
+      // ones) feel the same.
+      zoomBy(Math.exp(-e.deltaY * WHEEL_ZOOM_SPEED));
+    };
+
+    const pointers = new Map<number, { x: number; y: number }>();
+    let pinchDistance: number | null = null;
+    const currentPinchDistance = () => {
+      if (pointers.size !== 2) return null;
+      const [a, b] = [...pointers.values()];
+      return Math.hypot(a.x - b.x, a.y - b.y);
+    };
+    const onPointerDown = (e: PointerEvent) => {
+      pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      pinchDistance = currentPinchDistance();
+    };
+    const onPointerMove = (e: PointerEvent) => {
+      if (!pointers.has(e.pointerId)) return;
+      pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      const distance = currentPinchDistance();
+      if (distance && pinchDistance) zoomBy(distance / pinchDistance);
+      pinchDistance = distance;
+    };
+    const onPointerUp = (e: PointerEvent) => {
+      pointers.delete(e.pointerId);
+      pinchDistance = currentPinchDistance();
+    };
+
+    // Stop the browser from pinch-zooming the page over the canvas so the
+    // gesture reaches us as pointer events.
+    const prevTouchAction = el.style.touchAction;
+    el.style.touchAction = 'none';
+    el.addEventListener('wheel', onWheel, { passive: false });
+    el.addEventListener('pointerdown', onPointerDown);
+    el.addEventListener('pointermove', onPointerMove);
+    el.addEventListener('pointerup', onPointerUp);
+    el.addEventListener('pointercancel', onPointerUp);
+    return () => {
+      el.style.touchAction = prevTouchAction;
+      el.removeEventListener('wheel', onWheel);
+      el.removeEventListener('pointerdown', onPointerDown);
+      el.removeEventListener('pointermove', onPointerMove);
+      el.removeEventListener('pointerup', onPointerUp);
+      el.removeEventListener('pointercancel', onPointerUp);
+    };
+  }, [gl]);
+
+  useFrame(() => {
+    const target = targetZoom.current;
+    if (Math.abs(camera.zoom - target) < 1e-4) return;
+    camera.zoom = reducedMotion
+      ? target
+      : THREE.MathUtils.lerp(camera.zoom, target, ZOOM_EASE);
+    camera.updateProjectionMatrix();
+  });
+
+  return null;
+}
+
+// Dragging (mouse or one finger) orbits the camera around the Bounds target
+// within a limited range, then eases back to the fitted angle on release.
+// Zoom/pan are left to ZoomControls, so OrbitControls also ignores
+// two-finger touches and the pinch gesture still reaches it.
+function DragOrbit({ reducedMotion }: { reducedMotion: boolean }) {
+  const controlsRef = useRef<ComponentRef<typeof OrbitControls>>(null);
+  const camera = useThree((state) => state.camera);
+  // Angle the drag started from; captured per drag so a refit in between
+  // (e.g. a resize) is picked up.
+  const home = useRef<{ azimuth: number; polar: number } | null>(null);
+  const returning = useRef(false);
+
+  useEffect(() => {
+    const controls = controlsRef.current;
+    if (!controls) return;
+    const onStart = () => {
+      if (!returning.current) {
+        const azimuth = controls.getAzimuthalAngle();
+        const polar = controls.getPolarAngle();
+        home.current = { azimuth, polar };
+        controls.minAzimuthAngle = azimuth - ORBIT_MAX_AZIMUTH;
+        controls.maxAzimuthAngle = azimuth + ORBIT_MAX_AZIMUTH;
+        controls.minPolarAngle = polar - ORBIT_MAX_POLAR;
+        controls.maxPolarAngle = polar + ORBIT_MAX_POLAR;
+      }
+      returning.current = false;
+    };
+    const onEnd = () => {
+      returning.current = home.current !== null;
+    };
+    controls.addEventListener('start', onStart);
+    controls.addEventListener('end', onEnd);
+    return () => {
+      controls.removeEventListener('start', onStart);
+      controls.removeEventListener('end', onEnd);
+    };
+  }, []);
+
+  const offset = useRef(new THREE.Vector3());
+  const spherical = useRef(new THREE.Spherical());
+  useFrame(() => {
+    const controls = controlsRef.current;
+    if (!returning.current || !home.current || !controls) return;
+    const target = controls.target;
+    const s = spherical.current.setFromVector3(
+      offset.current.copy(camera.position).sub(target),
+    );
+    // Shortest way around, same as the edge lights.
+    const dTheta = Math.atan2(
+      Math.sin(home.current.azimuth - s.theta),
+      Math.cos(home.current.azimuth - s.theta),
+    );
+    const dPhi = home.current.polar - s.phi;
+    const done =
+      reducedMotion || (Math.abs(dTheta) < 1e-3 && Math.abs(dPhi) < 1e-3);
+    const k = done ? 1 : ORBIT_RETURN_EASE;
+    s.theta += dTheta * k;
+    s.phi += dPhi * k;
+    camera.position.copy(target).add(offset.current.setFromSpherical(s));
+    camera.lookAt(target);
+    if (done) {
+      returning.current = false;
+      home.current = null;
+    }
+  });
+
+  return (
+    <OrbitControls
+      ref={controlsRef}
+      makeDefault
+      enableZoom={false}
+      enablePan={false}
+      enableDamping={false}
+    />
+  );
+}
+
 interface CharacterHostProps {
   state: CharacterState;
   reducedMotion: boolean;
@@ -178,6 +352,8 @@ interface CharacterHostProps {
   /** Changes whenever the host's container is resized/reshaped (e.g. a tier
    * change), so the camera can re-fit to the new aspect ratio. */
   fitKey: string;
+  /** Padding around the model when fitting the camera (1 = edge to edge). */
+  fitMargin?: number;
   /** When true, the canvas clears to transparent instead of opaque black,
    * so a CSS glow layer behind it can show through and bleed into the
    * background around the character. */
@@ -187,9 +363,11 @@ interface CharacterHostProps {
 function RefitOnChange({
   fitKey,
   framing,
+  fitMargin,
 }: {
   fitKey: string;
   framing: Framing;
+  fitMargin: number;
 }) {
   const bounds = useBounds();
   const { camera, size } = useThree();
@@ -197,26 +375,45 @@ function RefitOnChange({
   // Re-deriving it from the camera's current position on every resize made
   // the angle drift: the camera sits relative to the raised target (not the
   // box center), and may be mid-animation, so each refit tilted it further.
-  const bustDirection = useRef<THREE.Vector3 | null>(null);
+  const fitDirection = useRef<THREE.Vector3 | null>(null);
   useEffect(() => {
     bounds.refresh();
+    const { center, size: boxSize, distance } = bounds.getSize();
+    fitDirection.current ??= camera.position.clone().sub(center).normalize();
+    const direction = fitDirection.current;
     if (framing === 'bust') {
-      const { center, size: boxSize, distance } = bounds.getSize();
       const target = new THREE.Vector3(
         center.x,
         center.y + boxSize.y * BUST_VERTICAL_OFFSET,
         center.z,
       );
-      bustDirection.current ??= camera.position.clone().sub(center).normalize();
-      const direction = bustDirection.current;
       bounds
         .moveTo(target.clone().addScaledVector(direction, distance * BUST_ZOOM))
         .lookAt({ target });
     } else {
-      bounds.fit();
+      // Not bounds.fit(): drei sizes the fit by the box's largest side and
+      // divides by aspect on portrait screens, so on a phone the body's
+      // *height* got squeezed into the screen's *width* and the character
+      // came out tiny. Fit the actual height and width separately instead.
+      const perspective = camera as THREE.PerspectiveCamera;
+      const tanHalfFov = Math.tan(
+        THREE.MathUtils.degToRad(perspective.fov) / 2,
+      );
+      const fitHeight = boxSize.y / (2 * tanHalfFov);
+      const fitWidth = boxSize.x / (2 * tanHalfFov * perspective.aspect);
+      bounds
+        .moveTo(
+          center
+            .clone()
+            .addScaledVector(
+              direction,
+              fitMargin * Math.max(fitHeight, fitWidth),
+            ),
+        )
+        .lookAt({ target: center });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fitKey, framing, size.width, size.height]);
+  }, [fitKey, framing, fitMargin, size.width, size.height]);
   return null;
 }
 
@@ -228,6 +425,7 @@ export function CharacterHost({
   mouseLook,
   framing = 'full',
   fitKey,
+  fitMargin = 1.2,
   transparentBackground = false,
 }: CharacterHostProps) {
   return (
@@ -241,10 +439,16 @@ export function CharacterHost({
         <color attach="background" args={['#000000']} />
       )}
       <MouseFollowLights reducedMotion={reducedMotion} />
+      <ZoomControls reducedMotion={reducedMotion} />
+      <DragOrbit reducedMotion={reducedMotion} />
       <Suspense fallback={null}>
         <Environment preset="forest" />
-        <Bounds clip observe margin={1.2}>
-          <RefitOnChange fitKey={fitKey} framing={framing} />
+        <Bounds clip observe margin={fitMargin}>
+          <RefitOnChange
+            fitKey={fitKey}
+            framing={framing}
+            fitMargin={fitMargin}
+          />
           <CharacterModel
             state={state}
             reducedMotion={reducedMotion}
