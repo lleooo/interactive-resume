@@ -17,12 +17,16 @@ function edgePoint(angle: number) {
   return { x: dx * scale, y: dy * scale };
 }
 
-export function GlowBackground() {
+export function GlowBackground({ paused }: { paused: boolean }) {
   const [mouse, setMouse] = useState({ x: 0, y: 0 });
   const mouseRef = useRef(mouse);
   const edgeGlowRef = useRef<HTMLDivElement>(null);
+  // Kept outside the effect so the glow resumes where it stopped after a pause.
+  // Starts at the bottom-right corner.
+  const angleRef = useRef(Math.PI / 4);
 
   useEffect(() => {
+    if (paused) return;
     const handleMouseMove = (event: MouseEvent) => {
       const next = {
         x: (event.clientX / window.innerWidth - 0.5) * 2,
@@ -33,13 +37,13 @@ export function GlowBackground() {
     };
     window.addEventListener('mousemove', handleMouseMove);
     return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
+  }, [paused]);
 
   useEffect(() => {
-    // Start at the bottom-right corner.
-    let angle = Math.PI / 4;
+    if (paused) return;
     let frame: number;
     const tick = () => {
+      let angle = angleRef.current;
       const { x, y } = mouseRef.current;
       if (Math.hypot(x, y) > EDGE_GLOW_DEAD_ZONE) {
         const target = Math.atan2(y, x);
@@ -49,6 +53,7 @@ export function GlowBackground() {
           Math.cos(target - angle),
         );
         angle += delta * EDGE_GLOW_EASE;
+        angleRef.current = angle;
       }
       const p = edgePoint(angle);
       if (edgeGlowRef.current) {
@@ -60,7 +65,7 @@ export function GlowBackground() {
     };
     frame = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(frame);
-  }, []);
+  }, [paused]);
 
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden">

@@ -1,4 +1,4 @@
-import { useEffect, useRef, type RefObject } from 'react';
+import type { RefObject } from 'react';
 import { useLanguage } from '../../../shared/i18n/LanguageContext';
 import { uiStrings } from '../../../shared/i18n/ui-strings';
 import { ChatMessage } from './ChatMessage';
@@ -22,6 +22,7 @@ interface ChatThreadProps {
   askedKeys: ReadonlySet<string>;
   onSuggestedClick: (question: Bilingual) => void;
   scrollRef: RefObject<HTMLDivElement | null>;
+  inputRef: RefObject<HTMLInputElement | null>;
 }
 
 export function ChatThread({
@@ -35,10 +36,10 @@ export function ChatThread({
   askedKeys,
   onSuggestedClick,
   scrollRef,
+  inputRef,
 }: ChatThreadProps) {
   const { t } = useLanguage();
   const strings = uiStrings.chatbot;
-  const suggestedRef = useRef<HTMLDivElement>(null);
 
   // Unasked questions keep their original order; asked ones follow in the
   // order they were asked (askedKeys is insertion-ordered).
@@ -47,11 +48,6 @@ export function ChatThread({
     ...suggestedQuestions.filter((q) => !askedKeys.has(q.en)),
     ...[...askedKeys].flatMap((key) => byKey.get(key) ?? []),
   ];
-
-  // After a reorder, jump back to the start so the next unasked question is visible.
-  useEffect(() => {
-    suggestedRef.current?.scrollTo({ left: 0 });
-  }, [askedKeys]);
 
   return (
     <>
@@ -67,17 +63,15 @@ export function ChatThread({
       </div>
 
       {!limitReached && (
-        <div
-          ref={suggestedRef}
-          className="flex shrink-0 gap-2 overflow-x-auto border-t border-slate-200 px-3 py-2 dark:border-slate-700"
-        >
+        // Wrapped, ten chips can take several rows; cap it so the thread keeps the room.
+        <div className="flex max-h-32 shrink-0 flex-wrap gap-2 overflow-y-auto border-t border-slate-200 px-3 py-2 dark:border-slate-700">
           {orderedQuestions.map((q) => (
             <button
               key={q.en}
               type="button"
               onClick={() => onSuggestedClick(q)}
               disabled={isPending}
-              className={`shrink-0 whitespace-nowrap rounded-full border px-3 py-1 text-xs disabled:cursor-not-allowed disabled:opacity-50 ${
+              className={`rounded-full border px-3 py-1 text-xs disabled:cursor-not-allowed disabled:opacity-50 ${
                 askedKeys.has(q.en) ? askedChipClass : freshChipClass
               }`}
             >
@@ -93,6 +87,7 @@ export function ChatThread({
         )}
         <div className="flex gap-2">
           <input
+            ref={inputRef}
             type="text"
             value={inputValue}
             onChange={(e) => onInputChange(e.target.value)}

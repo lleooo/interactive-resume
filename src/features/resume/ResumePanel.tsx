@@ -9,23 +9,28 @@ import { Skills } from './components/Skills';
 
 interface ResumePanelProps {
   open: boolean;
+  closeOnEscape: boolean;
   onClose: () => void;
 }
 
-export function ResumePanel({ open, onClose }: ResumePanelProps) {
+export function ResumePanel({ open, closeOnEscape, onClose }: ResumePanelProps) {
   const reducedMotion = useMediaQuery('(prefers-reduced-motion: reduce)');
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!open) return;
     if (scrollRef.current) scrollRef.current.scrollTop = 0;
+  }, [open]);
+
+  useEffect(() => {
+    if (!open || !closeOnEscape) return;
 
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
     };
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, [open, onClose]);
+  }, [open, closeOnEscape, onClose]);
 
   // Only clicks on empty space (not bubbled up from the card) close the panel.
   const closeOnSelf = (e: MouseEvent) => {

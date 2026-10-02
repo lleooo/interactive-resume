@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useLanguage } from '../../shared/i18n/LanguageContext';
+import { useMediaQuery } from '../../shared/hooks/useMediaQuery';
 import { uiStrings } from '../../shared/i18n/ui-strings';
 import { ChatLauncher } from './components/ChatLauncher';
 import { ChatThread } from './components/ChatThread';
@@ -11,15 +12,30 @@ import type { Bilingual } from '../../shared/i18n/types';
 
 const suggestedQuestions = [
   { en: 'Who are you?', zh: '你是誰？' },
-  { en: 'How many years of frontend experience do you have?', zh: '你有幾年前端經驗？' },
+  {
+    en: 'How many years of frontend experience do you have?',
+    zh: '你有幾年前端經驗？',
+  },
   { en: 'What tech are you most familiar with?', zh: '你最熟悉哪些技術？' },
   { en: 'What React projects have you built?', zh: '你做過哪些 React 專案？' },
   { en: 'Do you have WebRTC experience?', zh: '你有 WebRTC 經驗嗎？' },
-  { en: 'Do you have DevOps / Cloud experience?', zh: '你有 DevOps / Cloud 經驗嗎？' },
-  { en: 'What was your most challenging project?', zh: '你做過哪些最有挑戰性的專案？' },
+  {
+    en: 'Do you have DevOps / Cloud experience?',
+    zh: '你有 DevOps / Cloud 經驗嗎？',
+  },
+  {
+    en: 'What was your most challenging project?',
+    zh: '你做過哪些最有挑戰性的專案？',
+  },
   { en: 'What are you currently learning?', zh: '你目前正在學習什麼？' },
-  { en: 'Why did you want to become a frontend engineer?', zh: '為什麼你會想做 Frontend Engineer？' },
-  { en: 'What problem did you solve and how?', zh: '你過去遇到什麼問題，又是怎麼解決的？' },
+  {
+    en: 'Why did you want to become a frontend engineer?',
+    zh: '為什麼你會想做 Frontend Engineer？',
+  },
+  {
+    en: 'What problem did you solve and how?',
+    zh: '你過去遇到什麼問題，又是怎麼解決的？',
+  },
 ];
 
 const DAILY_LIMIT = 20;
@@ -48,15 +64,26 @@ function makeId() {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 }
 
-export function ChatWidget() {
+interface ChatWidgetProps {
+  isOpen: boolean;
+  onOpenChange: (open: boolean) => void;
+}
+
+export function ChatWidget({ isOpen, onOpenChange }: ChatWidgetProps) {
   const { lang, t } = useLanguage();
   const strings = uiStrings.chatbot;
-  const [isOpen, setIsOpen] = useState(false);
+  const isCoarsePointer = useMediaQuery('(pointer: coarse)');
   const [messages, setMessages] = useState<ChatMessageType[]>([]);
   const [inputValue, setInputValue] = useState('');
-  const [askedKeys, setAskedKeys] = useState<ReadonlySet<string>>(() => new Set());
+  const [askedKeys, setAskedKeys] = useState<ReadonlySet<string>>(
+    () => new Set(),
+  );
   const [dailyCount, setDailyCount] = useState(readDailyCount);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const launcherRef = useRef<HTMLButtonElement>(null);
+  const wasOpen = useRef(isOpen);
   const { mutateAsync, isPending } = useSendMessage();
 
   const limitReached = dailyCount >= DAILY_LIMIT;
@@ -67,6 +94,26 @@ export function ChatWidget() {
     }
   }, [isOpen, messages.length, strings.greeting, t]);
 
+  // Move focus into the panel on open and back to the launcher on close. On
+  // touch screens, focus the panel rather than the input so the keyboard
+  // doesn't pop up over it straight away.
+  useEffect(() => {
+    if (isOpen === wasOpen.current) return;
+    wasOpen.current = isOpen;
+    if (!isOpen) launcherRef.current?.focus();
+    else if (isCoarsePointer) panelRef.current?.focus();
+    else inputRef.current?.focus();
+  }, [isOpen, isCoarsePointer]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onOpenChange(false);
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [isOpen, onOpenChange]);
+
   useEffect(() => {
     const node = scrollRef.current;
     if (node) node.scrollTop = node.scrollHeight;
@@ -76,7 +123,11 @@ export function ChatWidget() {
     const trimmed = question.trim();
     if (!trimmed || isPending || limitReached) return;
 
-    const userMessage: ChatMessageType = { id: makeId(), sender: 'user', text: trimmed };
+    const userMessage: ChatMessageType = {
+      id: makeId(),
+      sender: 'user',
+      text: trimmed,
+    };
     const history: ChatApiMessage[] = [...messages, userMessage].map((m) => ({
       role: m.sender === 'bot' ? 'assistant' : 'user',
       text: m.text,
@@ -87,9 +138,15 @@ export function ChatWidget() {
 
     try {
       const reply = await mutateAsync({ messages: history, lang });
-      setMessages((prev) => [...prev, { id: makeId(), sender: 'bot', text: reply }]);
+      setMessages((prev) => [
+        ...prev,
+        { id: makeId(), sender: 'bot', text: reply },
+      ]);
     } catch {
-      setMessages((prev) => [...prev, { id: makeId(), sender: 'bot', text: t(strings.error) }]);
+      setMessages((prev) => [
+        ...prev,
+        { id: makeId(), sender: 'bot', text: t(strings.error) },
+      ]);
     } finally {
       const next = dailyCount + 1;
       setDailyCount(next);
@@ -114,17 +171,40 @@ export function ChatWidget() {
   }
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 flex flex-col items-end gap-3">
+    <>
+      {/* Clicking the blurred page closes the chat. */}
+      <div
+        aria-hidden
+        onClick={() => onOpenChange(false)}
+        className={`fixed inset-0 z-50 bg-black/30 backdrop-blur-sm transition-opacity duration-300 motion-reduce:transition-none ${
+          isOpen ? 'opacity-100' : 'pointer-events-none opacity-0'
+        }`}
+      />
+
       {isOpen && (
-        <div className="flex h-[28rem] w-[22rem] max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl dark:border-slate-700 dark:bg-slate-800">
+        // Full screen on phones; a full-height panel docked right from sm up.
+        <div
+          ref={panelRef}
+          role="dialog"
+          aria-modal="true"
+          aria-label={t(strings.title)}
+          tabIndex={-1}
+          className="fixed inset-x-0 top-0 z-50 flex h-dvh flex-col overflow-hidden bg-white pb-[env(safe-area-inset-bottom)] shadow-2xl outline-none sm:inset-x-auto sm:inset-y-3 sm:right-3 sm:h-auto sm:w-[34rem] sm:max-w-[calc(100vw-1.5rem)] sm:rounded-2xl sm:border sm:border-slate-200 sm:pb-0 dark:bg-slate-800 sm:dark:border-slate-700"
+        >
           <div className="flex items-center justify-between border-b border-slate-200 px-4 py-2 dark:border-slate-700">
             <div className="flex items-center gap-2">
-              <RobotHead mood={isPending ? 'thinking' : 'idle'} blinkSignal={0} className="h-8 w-8" />
-              <span className="font-semibold text-slate-800 dark:text-white">{t(strings.title)}</span>
+              <RobotHead
+                mood={isPending ? 'thinking' : 'idle'}
+                blinkSignal={0}
+                className="h-8 w-8"
+              />
+              <span className="font-semibold text-slate-800 dark:text-white">
+                {t(strings.title)}
+              </span>
             </div>
             <button
               type="button"
-              onClick={() => setIsOpen(false)}
+              onClick={() => onOpenChange(false)}
               aria-label={t(strings.closeLabel)}
               className="rounded-full p-2 text-slate-500 hover:bg-slate-900/5 hover:text-slate-800 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white"
             >
@@ -143,11 +223,23 @@ export function ChatWidget() {
             askedKeys={askedKeys}
             onSuggestedClick={handleSuggestedClick}
             scrollRef={scrollRef}
+            inputRef={inputRef}
           />
         </div>
       )}
 
-      <ChatLauncher isOpen={isOpen} isThinking={isPending} onToggle={() => setIsOpen((prev) => !prev)} />
-    </div>
+      {/* Hidden with CSS rather than unmounted, so its intro bubble doesn't
+          replay on every close and focus can return to it. */}
+      <div
+        className={`fixed bottom-4 right-4 z-50 ${isOpen ? 'invisible' : ''}`}
+      >
+        <ChatLauncher
+          ref={launcherRef}
+          isOpen={isOpen}
+          isThinking={isPending}
+          onToggle={() => onOpenChange(!isOpen)}
+        />
+      </div>
+    </>
   );
 }

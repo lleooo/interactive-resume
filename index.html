@@ -116,12 +116,19 @@
           done = true;
           clearInterval(creep);
           loader.classList.add('boot-loader--done');
+          window.dispatchEvent(new Event('boot-loader-done'));
           setTimeout(function () {
             loader.remove();
           }, 450);
         }
 
-        window.__bootLoader = { setProgress: setProgress, finish: finish };
+        window.__bootLoader = {
+          setProgress: setProgress,
+          finish: finish,
+          isDone: function () {
+            return done;
+          },
+        };
 
         // Ease toward 20% while the JS bundles download.
         creep = setInterval(function () {

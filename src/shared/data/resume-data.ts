@@ -47,30 +47,15 @@ export interface EducationEntry {
   endDate: string;
 }
 
-export interface CareerStoryEntry {
-  heading: Bilingual;
-  text: Bilingual;
-}
-
 export interface ResumeData {
   name: Bilingual;
   title: Bilingual;
   tagline: Bilingual;
-  summary: Bilingual;
-  highlights: Bilingual[];
   contact: ContactInfo;
   experience: ExperienceEntry[];
   projects: ProjectEntry[];
   skills: SkillCategory[];
   education: EducationEntry[];
-  certifications: Bilingual[];
-  languages: Bilingual[];
-  story: {
-    intro: Bilingual;
-    journey: CareerStoryEntry[];
-    closing: Bilingual;
-    outsideWork: Bilingual;
-  };
 }
 
 export const resumeData: ResumeData = {
@@ -80,32 +65,6 @@ export const resumeData: ResumeData = {
     en: 'Frontend engineer who takes products from architecture to production — with real-time systems and cloud deployment chops.',
     zh: '3～4 年前端開發經驗，熟悉 React 與前端工程實務，能獨立負責專案從架構規劃、功能開發至部署上線。具備良好的問題分析與解決能力，能快速理解需求，穩定交付產品功能。',
   },
-  summary: {
-    en: "I have 3–4 years of frontend experience centered on the React / TypeScript / Next.js ecosystem, working with React Query and Zustand for state and cache management. Beyond UI work, I build real-time features with WebSocket, WebRTC, and SignalR, and I'm comfortable owning deployment on AWS (Route53, CloudFront, S3, ALB) with Docker and Nginx. I like taking a project from architecture through to a stable production launch, and I pick up new requirements quickly.",
-    zh: '我有 3–4 年前端開發經驗，專精於 React / TypeScript / Next.js 生態系，並使用 React Query、Zustand 進行狀態與快取管理。除了介面開發，我也負責過即時通訊功能，包含 WebSocket、WebRTC、SignalR，並具備 AWS（Route53、CloudFront、S3、ALB）搭配 Docker、Nginx 的部署經驗。我喜歡把一個專案從架構規劃一路做到穩定上線，也能快速理解並交付新的需求。',
-  },
-  highlights: [
-    {
-      en: 'Built a production WebRTC + WebSocket voice calling feature — handling ICE candidate buffering, heartbeats, and auto-reconnect on token expiry.',
-      zh: '打造過正式上線的 WebRTC + WebSocket 語音通話功能，處理 ICE candidate 緩衝、心跳機制與 token 過期自動重連。',
-    },
-    {
-      en: 'Solo-owned an 18-module admin system end to end, from architecture design through production deployment.',
-      zh: '獨立負責一套涵蓋 18 個業務模組的後台系統，從架構設計到 Production 上線全程獨立完成。',
-    },
-    {
-      en: 'Real AWS infrastructure experience for a frontend engineer — Route53, CloudFront, S3, and ALB routing/health checks.',
-      zh: '身為前端工程師，也具備扎實的 AWS 基礎架構經驗，包含 Route53、CloudFront、S3 與 ALB 路由/健康檢查設定。',
-    },
-    {
-      en: 'Built browser-based remote-access tools from scratch — Web FTP, Web VNC, and Web SSH — turning the browser into a systems console.',
-      zh: '從零打造多個瀏覽器端遠端操作工具 — Web FTP、Web VNC、Web SSH — 讓瀏覽器變成系統操作主控台。',
-    },
-    {
-      en: 'Diagnosed and fixed a concurrent-401 authentication storm with a refresh-concurrency-control and request-replay mechanism.',
-      zh: '診斷並修復多請求併發 401 的認證風暴問題，實作 token refresh 併發控制與請求重放機制解決。',
-    },
-  ],
   contact: {
     email: 'leo88728@gmail.com',
     phone: {
@@ -138,8 +97,8 @@ export const resumeData: ResumeData = {
           zh: '負責前端系統開發與部署，涵蓋 18 個業務模組，從功能開發、共用元件與狀態管理至 Production 上線皆獨立完成。',
         },
         {
-          en: 'Implemented a cloud intercom with WebSocket signaling + WebRTC voice calls, handling ICE candidate buffering, heartbeats, and auto-reconnect on token expiry.',
-          zh: '實作雲端對講機：WebSocket 訊令 + WebRTC 語音通話，處理 ICE candidate緩衝、心跳、token 過期自動重連。',
+          en: 'Implemented a cloud intercom with WebSocket signaling + WebRTC voice calls, handling ICE candidate buffering and heartbeats.',
+          zh: '實作雲端對講機：WebSocket 訊令 + WebRTC 語音通話，處理 ICE candidate 緩衝與心跳機制。',
         },
         {
           en: 'Implemented token refresh concurrency control and request replay to prevent duplicate refreshes when multiple requests hit 401 at once.',
@@ -248,12 +207,12 @@ export const resumeData: ResumeData = {
       role: { en: 'Solo Frontend Developer', zh: '獨立前端開發' },
       tech: ['WebSocket', 'WebRTC', 'React', 'TypeScript'],
       challenge: {
-        en: 'Voice calls needed to stay stable over flaky mobile networks, including surviving token expiry mid-call and slow ICE negotiation.',
-        zh: '語音通話需要在不穩定的行動網路環境下維持穩定，包含通話中 token 過期以及 ICE 協商延遲的情境。',
+        en: 'Calls kept failing to connect: ICE candidates often arrived over WebSocket before the remote description was set, so adding them failed.',
+        zh: '通話一開始每次都連不上：ICE candidate 經由 WebSocket 傳來時，remote description 常常還沒設定好，直接加入就會失敗。',
       },
       solution: {
-        en: 'Combined WebSocket signaling with WebRTC peer connections, buffering ICE candidates that arrive before the connection is ready, adding a heartbeat to detect drops, and auto-reconnecting when the auth token refreshes.',
-        zh: '整合 WebSocket 訊令傳輸與 WebRTC peer connection，緩衝在連線就緒前到達的 ICE candidate，加入心跳機制偵測斷線，並在 token 刷新後自動重新連線。',
+        en: 'Combined WebSocket signaling with WebRTC peer connections, buffering ICE candidates that arrive before the connection is ready, and adding a heartbeat to detect drops.',
+        zh: '整合 WebSocket 訊令傳輸與 WebRTC peer connection，緩衝在連線就緒前到達的 ICE candidate，並加入心跳機制偵測斷線。',
       },
       outcome: {
         en: 'A stable, production-grade cloud intercom feature shipped as part of the admin system.',
@@ -404,59 +363,4 @@ export const resumeData: ResumeData = {
       endDate: '2021-06',
     },
   ],
-  certifications: [
-    { en: 'TOEIC — 550 (ETS)', zh: 'TOEIC 多益測驗 — 550 分（ETS）' },
-  ],
-  languages: [
-    {
-      en: 'English — Intermediate listening, speaking & reading; basic writing',
-      zh: '英文 — 聽力/口說/閱讀中等，寫作略懂',
-    },
-  ],
-  story: {
-    intro: {
-      en: "I'm Leo Liu (劉楷珉), a graduate of Yuan Ze University's Department of Information Communication. I built my programming foundation through coursework there, then used my free time to self-teach frontend development on Udemy and build a portfolio, which gradually opened the door to a career as a frontend engineer.",
-      zh: '我是劉楷珉 Leo，畢業於元智大學資訊傳播學系，透過系上課程累積程式設計基礎，並利用課外時間透過 Udemy 自學前端技術、累積作品，逐步開啟前端工程師的職涯。',
-    },
-    journey: [
-      {
-        heading: {
-          en: 'First job — Application Engineer in the tech industry',
-          zh: '第一份工作 - 科技業的應用工程師',
-        },
-        text: {
-          en: 'My first job after graduating was at Horti Technology, where I worked on internal system UI and backend APIs (about 90% frontend, 10% backend). This is where I built my foundational understanding of frontend and backend concepts for web products, and started to see how frontend work connects to real business needs — helping the company solve everyday operational problems. It was my first exposure to a complete product development process.',
-          zh: '畢業後的第一份工作，在和瑞科技負責內部系統的畫面與後端 api 的開發（前端90%,後端10%)，在這裡建立起網頁產品前後端的基本概念，也開始理解前端如何配合實際業務需求，協助企業解決日常問題，首次接觸完整的產品開發流程。',
-        },
-      },
-      {
-        heading: {
-          en: 'Second job — a high-traffic, dual-platform livestreaming site',
-          zh: '第二份工作 - 流量高的雙平台直播站',
-        },
-        text: {
-          en: 'At my second job at Tianyu Software, I worked on frontend development, contributed to SEO optimization for the platform, built both the desktop and mobile-web versions, and handled connectivity issues for overseas users. Through this experience I came to understand how much SEO, site performance, and user experience matter for traffic, and gained hands-on experience with Next.js, PWA, and AWS.',
-          zh: '第二份工作於天譽軟體負責前端開發，參與平台 SEO 優化，同時開發電腦版與手機版平台，並處理海外使用者的連線問題。在這段經驗中，我開始理解 SEO、網站效能與使用者體驗對流量的重要性，也累積了 Next.js、PWA 與 AWS 等技術的實務經驗。',
-        },
-      },
-      {
-        heading: {
-          en: 'Third job — Frontend Engineer at an agency/contract-work company',
-          zh: '第三份工作 - 接案公司的前端工程師',
-        },
-        text: {
-          en: 'In my third job, I started independently owning the frontend for a project end to end — from requirements discussions, feature evaluation, and feasibility analysis, through implementation and production deployment — gradually building out a complete development workflow. This was also the first time I had to independently think through the full range of frontend concerns, moving beyond just building screens to considering user needs and how to implement the project as a whole.',
-          zh: '第三份工作開始獨立負責專案前端，從需求討論、功能評估與可行性分析，到功能實作及部署上線，逐步建立完整的開發流程。這也是我第一次需要獨立考慮前端開發中的各種問題，從單純完成畫面，進一步思考使用者需求與整體專案的實作方式。',
-        },
-      },
-    ],
-    closing: {
-      en: "I now have close to four years of frontend experience, mainly working with React and TypeScript (I'm also comfortable with Vue). With AI rapidly reshaping how software gets built, I'm continuing to expand into full-stack skills, so my scope isn't limited to frontend and I can take part in more complete product development.",
-      zh: '目前的我有接近四年的前端工作經歷，主要使用 React、TypeScript 等技術（Vue 也可以），面對 AI 快速改變軟體開發模式，目前正持續拓展全端相關能力，希望讓自己的技術範圍不只停留在前端，而能參與更完整的產品開發。',
-    },
-    outsideWork: {
-      en: 'I like trying all kinds of new things. Recently, to improve my English, I went abroad for two months to attend a language school. I love taking on different challenges — these experiences have broadened my perspective and given me more diverse viewpoints and ideas, enriching who I am.',
-      zh: '我喜歡嘗試各式各樣的新事物。前陣子為了增進英文能力，我出國念了兩個月的語言學校。我熱愛挑戰不同的事物，通過這些經歷，不僅擴展了我的眼界，也讓我獲得了更多元的觀點和想法，進而充實自己。',
-    },
-  },
 };

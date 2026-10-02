@@ -1,4 +1,5 @@
 import { resumeData } from '../src/shared/data/resume-data';
+import { knowledge } from './_lib/knowledge';
 import type { Bilingual, Lang } from '../src/shared/i18n/types';
 
 export const config = { runtime: 'edge' };
@@ -43,12 +44,12 @@ function formatResumeContext(lang: Lang): string {
   lines.push(`Name: ${pick(resumeData.name, lang)}`);
   lines.push(`Title: ${pick(resumeData.title, lang)}`);
   lines.push(`Tagline: ${pick(resumeData.tagline, lang)}`);
-  lines.push(`Summary: ${pick(resumeData.summary, lang)}`);
+  lines.push(`Summary: ${pick(knowledge.summary, lang)}`);
   lines.push(`Location: ${pick(resumeData.contact.location, lang)}`);
   lines.push(`Email: ${resumeData.contact.email}`);
 
   lines.push('\nHighlights:');
-  for (const highlight of resumeData.highlights) {
+  for (const highlight of knowledge.highlights) {
     lines.push(`- ${pick(highlight, lang)}`);
   }
 
@@ -92,22 +93,36 @@ function formatResumeContext(lang: Lang): string {
   }
 
   lines.push('\nCertifications:');
-  for (const cert of resumeData.certifications) {
+  for (const cert of knowledge.certifications) {
     lines.push(`- ${pick(cert, lang)}`);
   }
 
   lines.push('\nLanguages:');
-  for (const language of resumeData.languages) {
+  for (const language of knowledge.languages) {
     lines.push(`- ${pick(language, lang)}`);
   }
 
   lines.push('\nPersonal Story:');
-  lines.push(pick(resumeData.story.intro, lang));
-  for (const entry of resumeData.story.journey) {
+  lines.push(pick(knowledge.story.intro, lang));
+  for (const entry of knowledge.story.journey) {
     lines.push(`- ${pick(entry.heading, lang)}: ${pick(entry.text, lang)}`);
   }
-  lines.push(pick(resumeData.story.closing, lang));
-  lines.push(`\nOutside of Work: ${pick(resumeData.story.outsideWork, lang)}`);
+  lines.push(pick(knowledge.story.closing, lang));
+  lines.push(`\nOutside of Work: ${pick(knowledge.story.outsideWork, lang)}`);
+
+  lines.push(`\nWhy I'm Looking for a New Role: ${pick(knowledge.motivation, lang)}`);
+
+  lines.push('\nStrengths:');
+  for (const strength of knowledge.strengths) {
+    lines.push(`- ${pick(strength, lang)}`);
+  }
+
+  lines.push(`\nCurrently Improving: ${pick(knowledge.growthArea, lang)}`);
+
+  lines.push('\nTechnical Deep Dives:');
+  for (const dive of knowledge.deepDives) {
+    lines.push(`- ${pick(dive.topic, lang)}: ${pick(dive.detail, lang)}`);
+  }
 
   return lines.join('\n');
 }

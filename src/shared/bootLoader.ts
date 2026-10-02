@@ -6,6 +6,7 @@ interface BootLoader {
   /** 0–1; only ever moves forward. */
   setProgress: (progress: number) => void;
   finish: () => void;
+  isDone: () => boolean;
 }
 
 declare global {
@@ -25,4 +26,14 @@ export function setBootAssetProgress(progress: number) {
 
 export function finishBootLoader() {
   window.__bootLoader?.finish();
+}
+
+/** True once the boot loader has started fading out (or was never there). */
+export function isBootLoaderDone() {
+  return window.__bootLoader?.isDone() ?? true;
+}
+
+export function subscribeBootLoaderDone(onDone: () => void) {
+  window.addEventListener('boot-loader-done', onDone);
+  return () => window.removeEventListener('boot-loader-done', onDone);
 }

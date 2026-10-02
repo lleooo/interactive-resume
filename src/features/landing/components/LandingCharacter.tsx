@@ -15,9 +15,11 @@ const CharacterHost = lazy(() =>
 interface LandingCharacterProps {
   /** Only the landing view needs this character rendering/animating. */
   active: boolean;
+  /** Freeze on the current frame (it stays visible, just not animating). */
+  paused: boolean;
 }
 
-export function LandingCharacter({ active }: LandingCharacterProps) {
+export function LandingCharacter({ active, paused }: LandingCharacterProps) {
   const reducedMotion = useMediaQuery('(prefers-reduced-motion: reduce)');
   const isCoarsePointer = useMediaQuery('(pointer: coarse)');
   // Below Tailwind's md breakpoint (same one LandingOverlay switches at) the
@@ -37,7 +39,7 @@ export function LandingCharacter({ active }: LandingCharacterProps) {
         state="idle"
         reducedMotion={reducedMotion}
         isCoarsePointer={isCoarsePointer}
-        isTabVisible={isTabVisible && active}
+        isTabVisible={isTabVisible && active && !paused}
         mouseLook={active && !reducedMotion && !isCoarsePointer}
         framing={isMobile ? 'full' : 'bust'}
         // Tighter fit on mobile so the full body nearly fills the height.

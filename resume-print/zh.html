@@ -57,7 +57,7 @@
         </div>
         <ul class="bullets">
           <li>負責前端系統開發與部署，涵蓋 18 個業務模組，從功能開發、共用元件與狀態管理至 Production 上線皆獨立完成</li>
-          <li>實作雲端對講機：WebSocket 訊令 + WebRTC 語音通話，處理 ICE candidate緩衝、心跳、token 過期自動重連</li>
+          <li>實作雲端對講機：WebSocket 訊令 + WebRTC 語音通話，處理 ICE candidate 緩衝與心跳機制</li>
           <li>實作 token refresh 併發控制與請求重放，避免多請求同時 401 時重複刷新</li>
           <li>處理網路中斷情境，設計斷線錯誤頁面與恢復流程，提升異常狀況下的使用者體驗。</li>
           <li>使用 Nginx Reverse Proxy 解耦環境 API 設定，使 Staging / Production 共用同一 Docker Image。</li>

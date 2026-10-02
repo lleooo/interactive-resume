@@ -1,5 +1,5 @@
-import { useMemo, useSyncExternalStore } from 'react';
-import type { Engine, ISourceOptions } from '@tsparticles/engine';
+import { useEffect, useMemo, useRef, useSyncExternalStore } from 'react';
+import type { Container, Engine, ISourceOptions } from '@tsparticles/engine';
 import { Particles, ParticlesProvider } from '@tsparticles/react';
 import { loadSlim } from '@tsparticles/slim';
 import { useTheme } from '../theme/ThemeContext';
@@ -90,12 +90,20 @@ function useMediaQuery(query: string): boolean {
   );
 }
 
-export function ParticleBackground() {
+export function ParticleBackground({ paused }: { paused: boolean }) {
   const { theme } = useTheme();
   const isWide = useMediaQuery(MIN_WIDTH_QUERY);
   const prefersReducedMotion = useMediaQuery(REDUCED_MOTION_QUERY);
   // Particles reloads whenever the options reference changes, so memoize per theme.
   const options = useMemo(() => buildOptions(theme), [theme]);
+  const containerRef = useRef<Container | undefined>(undefined);
+  const pausedRef = useRef(paused);
+
+  useEffect(() => {
+    pausedRef.current = paused;
+    if (paused) containerRef.current?.pause();
+    else containerRef.current?.play();
+  }, [paused]);
 
   if (!isWide || prefersReducedMotion) return null;
 
@@ -105,6 +113,11 @@ export function ParticleBackground() {
         id="particle-background"
         className="pointer-events-none fixed inset-0 z-0"
         options={options}
+        // Also fires on reload (e.g. a theme change), so re-apply the pause.
+        particlesLoaded={(container) => {
+          containerRef.current = container;
+          if (pausedRef.current) container?.pause();
+        }}
       />
     </ParticlesProvider>
   );

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type Ref } from 'react';
 import { useLanguage } from '../../../shared/i18n/LanguageContext';
 import { uiStrings } from '../../../shared/i18n/ui-strings';
 import { RobotHead } from './RobotHead';
@@ -9,12 +9,14 @@ interface ChatLauncherProps {
   isOpen: boolean;
   isThinking: boolean;
   onToggle: () => void;
+  ref?: Ref<HTMLButtonElement>;
 }
 
 export function ChatLauncher({
   isOpen,
   isThinking,
   onToggle,
+  ref,
 }: ChatLauncherProps) {
   const { t } = useLanguage();
   const strings = uiStrings.chatbot;
@@ -41,6 +43,7 @@ export function ChatLauncher({
 
   return (
     <button
+      ref={ref}
       type="button"
       onClick={onToggle}
       onPointerEnter={() => setHovered(true)}
