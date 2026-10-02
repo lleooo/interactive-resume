@@ -6,6 +6,13 @@ export const uiStrings = {
     resumeCta: { en: 'RESUME', zh: '履歷' },
     close: { en: 'Close', zh: '關閉' },
   },
+  resumeNav: {
+    label: { en: 'Resume sections', zh: '履歷章節' },
+    about: { en: 'About', zh: '簡介' },
+    experience: { en: 'Experience', zh: '經歷' },
+    projects: { en: 'Projects', zh: '專案' },
+    skills: { en: 'Skills', zh: '技能' },
+  },
   hero: {
     enlargePhoto: { en: 'Enlarge photo', zh: '放大照片' },
   },

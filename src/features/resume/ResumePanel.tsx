@@ -5,6 +5,7 @@ import { Footer } from './components/Footer';
 import { Hero } from './components/Hero';
 import { Experience } from './components/Experience';
 import { Projects } from './components/Projects';
+import { ResumeNav } from './components/ResumeNav';
 import { Skills } from './components/Skills';
 
 interface ResumePanelProps {
@@ -58,11 +59,22 @@ export function ResumePanel({ open, closeOnEscape, onClose }: ResumePanelProps) 
         } ${open ? 'translate-y-0' : 'translate-y-[100vh]'}`}
         onClick={closeOnSelf}
       >
+        {/* Sticky inside the scroller (not fixed over it) so it never covers
+            the scrollbar. The top padding leaves room for TopControls, which
+            float above it, so the blur reads as one header. Not a close
+            target: the links sit right next to the empty space. */}
+        <header
+          className={`sticky top-0 z-10 border-b border-slate-900/5 bg-white/70 pt-14 backdrop-blur-md dark:border-white/10 dark:bg-slate-950/70 ${fade}`}
+        >
+          <ResumeNav scrollRef={scrollRef} />
+        </header>
+
         <main
-          className="mx-auto max-w-[794px] px-3 pb-8 pt-14 sm:px-6 sm:py-12"
+          className="mx-auto max-w-[794px] px-3 pb-8 pt-4 sm:px-6 sm:pb-12 sm:pt-8"
           onClick={closeOnSelf}
         >
-          <article className="overflow-hidden rounded-2xl bg-white shadow-xl ring-1 ring-slate-900/5 dark:bg-slate-900 dark:ring-white/10">
+          {/* Keep jumped-to section headings clear of the sticky header. */}
+          <article className="overflow-hidden [&>section]:scroll-mt-28 rounded-2xl bg-white shadow-xl ring-1 ring-slate-900/5 dark:bg-slate-900 dark:ring-white/10">
             <Hero />
             <Experience />
             <Projects />
