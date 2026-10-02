@@ -25,6 +25,11 @@ export const uiStrings = {
   skills: {
     heading: { en: 'Skills', zh: '技術能力' },
   },
+  resumeFile: {
+    menuLabel: { en: 'Resume PDF', zh: '履歷 PDF' },
+    preview: { en: 'Preview', zh: '預覽' },
+    download: { en: 'Download', zh: '下載' },
+  },
   contact: {
     email: { en: 'Email', zh: 'Email' },
   },

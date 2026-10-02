@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Leo Liu - Frontend Engineer - Resume</title>
+  <link rel="stylesheet" href="resume.css">
+</head>
+
+<body>
+  <main class="page">
+
+    <header class="header">
+      <div>
+        <h1 class="name">Leo Liu <span class="alt">劉楷珉</span></h1>
+        <p class="title">Frontend Engineer &middot; React / TypeScript / Next.js</p>
+      </div>
+      <ul class="contacts">
+        <li><span class="label">Email</span><a href="mailto:leo88728@gmail.com">leo88728@gmail.com</a></li>
+        <li><span class="label">GitHub</span><a href="https://github.com/lleooo">github.com/lleooo</a></li>
+        <li><span class="label">Website</span><a href="https://my-resume-86.vercel.app/">my-resume-86.vercel.app</a>
+        </li>
+      </ul>
+    </header>
+
+    <section>
+      <h2>Summary</h2>
+      <p class="summary">Frontend engineer with 3+ years of experience building production web apps in React and
+        TypeScript. I own the
+        frontend end to end, from requirements through production deployment, with hands-on experience in real-time
+        features
+        (WebSocket, WebRTC, SignalR), AWS/GCP deployment, and Python/SQL backend work.</p>
+    </section>
+
+    <section>
+      <h2>Skills</h2>
+      <dl class="skills">
+        <dt>Frontend</dt>
+        <dd>React, TypeScript, JavaScript, Next.js 14 (SSR, Server/Client Components), React Router, Vite, React Query,
+          Zustand, PWA, Tailwind CSS, MUI, Bootstrap, jQuery</dd>
+        <dt>Real-time</dt>
+        <dd>WebSocket, WebRTC, SignalR</dd>
+        <dt>Backend / Cloud</dt>
+        <dd>Python, SQL &middot; AWS (Route 53, CloudFront, S3), GCP, Docker, Nginx</dd>
+        <dt>Tools</dt>
+        <dd>Git, Jira, Notion</dd>
+      </dl>
+    </section>
+
+    <section>
+      <h2>Experience</h2>
+
+      <div class="entry">
+        <div class="entry-head">
+          <div class="entry-title">JustXtar Technology <span class="role">&mdash; Frontend Engineer</span></div>
+          <div class="entry-meta">Jan 2026 &ndash; Sep 2026 &middot; 9 mos &middot; Neihu, Taipei</div>
+        </div>
+        <div class="entry-subrow">
+          <div class="entry-sub">Community property management admin system &middot; sole frontend developer</div>
+        </div>
+        <ul class="bullets">
+          <li>Built and deployed the frontend for 18 business modules solo, from features and shared components to
+            production.</li>
+          <li>Built a cloud intercom with WebSocket signaling and WebRTC voice: ICE buffering, heartbeats, token-expiry
+            reconnect.</li>
+          <li>Added token-refresh concurrency control and request replay so concurrent 401s trigger only one refresh.
+          </li>
+          <li>Handled network outages with an offline error page and recovery flow, improving UX under failure
+            conditions.</li>
+          <li>Decoupled per-environment API config with an Nginx reverse proxy so Staging and Production share one
+            Docker image.</li>
+        </ul>
+        <p class="tags">#ReactJS #Docker #MUI #GCP</p>
+      </div>
+
+      <div class="entry">
+        <div class="entry-head">
+          <div class="entry-title">Tianyu Software <span class="role">&mdash; Frontend Engineer</span></div>
+          <div class="entry-meta">Sep 2024 &ndash; Dec 2025 &middot; 1 yr 4 mos &middot; Neihu, Taipei</div>
+        </div>
+        <div class="entry-subrow">
+          <div class="entry-sub">Dual-platform sports live-streaming site</div>
+        </div>
+        <ul class="bullets">
+          <li>Developed and maintained the Next.js 14 web platform, building real-time messaging, i18n, and form
+            submission.</li>
+          <li>Built the mobile SPA with React Router and Vite; developed and maintained its PWA features.</li>
+          <li>Fixed cross-device UI issues: device-specific CSS, plus layout shifts from the iOS safe area and on-screen
+            keyboard.</li>
+          <li>Worked on dynamic domain switching to keep domains from being blocked by the Great Firewall, improving
+            availability.</li>
+          <li>Set up AWS Route 53, CloudFront, and S3 for DNS resolution, CDN, and static frontend hosting.</li>
+          <li>Built a SignalR gift system that syncs gift animations to every user&rsquo;s screen in real time.</li>
+        </ul>
+        <p class="tags">#ReactJS #Next.js #PWA #AWS #SEO</p>
+      </div>
+
+      <div class="entry">
+        <div class="entry-head">
+          <div class="entry-title">Horti Technology <span class="role">&mdash; Frontend Engineer</span></div>
+          <div class="entry-meta">Jun 2022 &ndash; Mar 2024 &middot; 1 yr 10 mos &middot; Zhubei, Hsinchu</div>
+        </div>
+        <ul class="bullets">
+          <li><strong>Wafer Map Generator:</strong> Adopted p5.js for Canvas rendering in place of the native
+            implementation, cutting ~500 lines of code; delivered two custom client requests within 3 weeks.</li>
+          <li><strong>Web FTP:</strong> Built the frontend with Bootstrap + jQuery and a backend API with Python ftplib,
+            streaming file-processing progress in real time via WebSocket.</li>
+          <li><strong>Web VNC:</strong> Developed a browser-based remote monitoring UI with noVNC, eliminating
+            engineers&rsquo; physical trips to the lab; supported multiple connections and used periodic screenshots
+            instead of persistent streams to reduce page load.</li>
+          <li><strong>Web SSH:</strong> Built a full in-browser terminal on the WebSSH API, supporting synchronized
+            commands across multiple terminals with auto-stop and error messages on failure.</li>
+          <li>Replaced backend loop lookups with SQL queries and added frontend lazy loading, significantly speeding up
+            search and loading for large lists.</li>
+        </ul>
+        <p class="tags">#jQuery #Python #JavaScript #Git #AJAX</p>
+      </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Side Projects</h2>
+      <div class="entry">
+        <div class="entry-head">
+          <div class="entry-title">interactive-resume</div>
+          <div class="entry-meta">Aug 2026 &ndash; Present</div>
+        </div>
+        <div class="entry-sub"><a href="https://my-resume-86.vercel.app/">my-resume-86.vercel.app</a> &middot; <a
+            href="https://github.com/lleooo/interactive-resume">github.com/lleooo/interactive-resume</a></div>
+        <ul class="bullets">
+          <li>Personal resume site with an AI career Q&amp;A chatbot, an interactive three.js 3D model, EN/ZH and
+            dark/light modes.</li>
+        </ul>
+      </div>
+    </section>
+
+    <div class="split">
+      <section>
+        <h2>Education</h2>
+        <div class="entry-head">
+          <div class="entry-title">Yuan Ze University</div>
+          <div class="entry-meta">Sep 2017 &ndash; Jun 2021</div>
+        </div>
+        <div>Bachelor’s degree, Information Communication</div>
+      </section>
+      <section>
+        <h2>Languages</h2>
+        <div><strong>Mandarin Chinese</strong> &mdash; Native</div>
+        <div><strong>English</strong> &mdash; Intermediate (TOEIC 550); 2 months of language school abroad</div>
+      </section>
+    </div>
+
+  </main>
+</body>
+
+</html>

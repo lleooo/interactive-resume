@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>劉楷珉 - 前端工程師 - 履歷</title>
+  <link rel="stylesheet" href="resume.css">
+</head>
+
+<body>
+  <main class="page">
+
+    <header class="header">
+      <div>
+        <h1 class="name">劉楷珉 <span class="alt">Leo Liu</span></h1>
+        <p class="title">前端工程師 &middot; React / TypeScript / Next.js</p>
+      </div>
+      <ul class="contacts">
+        <li><span class="label">Email</span><a href="mailto:leo88728@gmail.com">leo88728@gmail.com</a></li>
+        <li><span class="label">GitHub</span><a href="https://github.com/lleooo">github.com/lleooo</a></li>
+        <li><span class="label">個人網站</span><a href="https://my-resume-86.vercel.app/">my-resume-86.vercel.app</a></li>
+      </ul>
+    </header>
+
+    <section>
+      <h2>簡介</h2>
+      <p class="summary">3～4 年前端開發經驗，熟悉 React、TypeScript 與前端工程實務，能獨立負責專案前端，從需求討論、開發到部署上線一手包辦。具備 WebSocket / WebRTC /
+        SignalR 即時通訊、AWS 與 GCP 雲端部署，以及 Python、SQL 後端開發經驗。</p>
+    </section>
+
+    <section>
+      <h2>技能</h2>
+      <dl class="skills">
+        <dt>前端</dt>
+        <dd>React、TypeScript、JavaScript、Next.js 14（SSR、Server / Client Components）、React Router、Vite、React
+          Query、Zustand、PWA、Tailwind CSS、MUI、Bootstrap、jQuery</dd>
+        <dt>即時通訊</dt>
+        <dd>WebSocket、WebRTC、SignalR</dd>
+        <dt>後端 / 雲端</dt>
+        <dd>Python、SQL · AWS（Route 53、CloudFront、S3）、GCP、Docker、Nginx</dd>
+        <dt>工具</dt>
+        <dd>Git、Jira、Notion</dd>
+      </dl>
+    </section>
+
+    <section>
+      <h2>工作經歷</h2>
+
+      <div class="entry">
+        <div class="entry-head">
+          <div class="entry-title">集星資通股份有限公司 <span class="role">｜前端工程師</span></div>
+          <div class="entry-meta">2026/1~2026/9 · 9個月 · 台北市內湖區</div>
+        </div>
+        <div class="entry-subrow">
+          <div class="entry-sub">社區物業管理後台系統 | 前端獨立開發</div>
+        </div>
+        <ul class="bullets">
+          <li>負責前端系統開發與部署，涵蓋 18 個業務模組，從功能開發、共用元件與狀態管理至 Production 上線皆獨立完成</li>
+          <li>實作雲端對講機：WebSocket 訊令 + WebRTC 語音通話，處理 ICE candidate緩衝、心跳、token 過期自動重連</li>
+          <li>實作 token refresh 併發控制與請求重放，避免多請求同時 401 時重複刷新</li>
+          <li>處理網路中斷情境，設計斷線錯誤頁面與恢復流程，提升異常狀況下的使用者體驗。</li>
+          <li>使用 Nginx Reverse Proxy 解耦環境 API 設定，使 Staging / Production 共用同一 Docker Image。</li>
+        </ul>
+        <p class="tags">#ReactJS #Docker #MUI #GCP</p>
+      </div>
+
+      <div class="entry">
+        <div class="entry-head">
+          <div class="entry-title">天譽軟體有限公司 <span class="role">｜前端工程師</span></div>
+          <div class="entry-meta">2024/9~2025/12 · 1年4個月 · 台北市內湖區</div>
+        </div>
+        <div class="entry-subrow">
+          <div class="entry-sub">雙平台體育直播站開發</div>
+        </div>
+        <ul class="bullets">
+          <li>使用 Next.js 14 開發與維護 Web 平台，負責即時通訊、多國語系、表單提交等功能開發。</li>
+          <li>使用 React Router、Vite 開發手機版 SPA，參與 PWA 功能開發與維護。</li>
+          <li>排查並修正跨裝置 UI 相容性問題，針對特殊機型進行 CSS 調整，並處理 iOS Safe Area 與鍵盤彈出造成的畫面位移問題。</li>
+          <li>參與專案中的動態域名切換機制，避免固定域名被中國網路長城封鎖，提升網站可用性與存活率。</li>
+          <li>建置 AWS Route 53、CloudFront、S3 部署架構，完成網域解析、CDN 與前端靜態資源託管。</li>
+          <li>使用 SignalR 開發送禮系統，達成禮物動畫在所有使用者端即時同步顯示。</li>
+        </ul>
+        <p class="tags">#ReactJS #Next.js #PWA #AWS #SEO</p>
+      </div>
+
+      <div class="entry">
+        <div class="entry-head">
+          <div class="entry-title">和瑞科技股份有限公司 <span class="role">｜前端工程師</span></div>
+          <div class="entry-meta">2022/6~2024/3 · 1年10個月 · 新竹縣竹北市</div>
+        </div>
+        <ul class="bullets">
+          <li><strong>Wafer Map Generator</strong>：導入 p5.js 繪製 Canvas 圖形取代原生實作，程式碼精簡約 500 行；3 週內交付兩項客製化需求。</li>
+          <li><strong>Web FTP</strong>：使用 Bootstrap + jQuery 打造前端操作介面，並以 Python ftplib 開發後端 API，透過 WebSocket 即時回傳檔案處理進度。
+          </li>
+          <li><strong>Web VNC</strong>：使用 noVNC 開發瀏覽器端遠端監控介面，取代工程師實體進出實驗室之需求，支援多連線並以定時截圖取代持續連線，降低頁面負擔。</li>
+          <li><strong>Web SSH</strong>：基於 WebSSH API 打造完整瀏覽器端 Terminal 應用，支援多終端同步下達指令，指令執行失敗時自動停止並顯示錯誤訊息。</li>
+          <li>改用 SQL 查詢取代後端迴圈查找，並於前端新增 lazy load 機制，顯著提升大數據量列表的搜尋與載入速度。</li>
+        </ul>
+        <p class="tags">#jQuery #Python #JavaScript #Git #AJAX</p>
+      </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>個人專案</h2>
+      <div class="entry">
+        <div class="entry-head">
+          <div class="entry-title">interactive-resume 互動式履歷網站</div>
+          <div class="entry-meta">2026/08 – 進行中</div>
+        </div>
+        <div class="entry-sub"><a href="https://my-resume-86.vercel.app/">my-resume-86.vercel.app</a> · <a
+            href="https://github.com/lleooo/interactive-resume">github.com/lleooo/interactive-resume</a></div>
+        <ul class="bullets">
+          <li>個人履歷網頁：AI 助理問答了解我的職涯、three.js 互動式 3D 模型、中 / 英與深色 / 淺色切換。</li>
+        </ul>
+      </div>
+    </section>
+
+    <div class="split">
+      <section>
+        <h2>學歷</h2>
+        <div class="entry-head">
+          <div class="entry-title">元智大學</div>
+          <div class="entry-meta">2017/09 – 2021/06</div>
+        </div>
+        <div>資訊傳播學系 學士</div>
+      </section>
+      <section>
+        <h2>語言能力</h2>
+        <div><strong>中文</strong>：母語</div>
+        <div><strong>英文</strong>：中等（多益 550），曾赴海外語言學校進修 2 個月</div>
+      </section>
+    </div>
+
+  </main>
+</body>
+
+</html>

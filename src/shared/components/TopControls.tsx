@@ -3,6 +3,7 @@ import { useLanguage } from '../i18n/LanguageContext';
 import { uiStrings } from '../i18n/ui-strings';
 import { useTheme } from '../theme/ThemeContext';
 import { EASE } from '../motion';
+import { ResumeFileMenu } from './ResumeFileMenu';
 
 interface TopControlsProps {
   /** Shows the close button when the resume panel is open. */
@@ -22,6 +23,7 @@ export function TopControls({ resumeOpen, onClose }: TopControlsProps) {
 
   return (
     <div className="fixed right-3 top-3 z-40 flex items-center gap-2">
+      <ResumeFileMenu buttonClassName={controlClass} />
       <button
         type="button"
         onClick={toggleTheme}
